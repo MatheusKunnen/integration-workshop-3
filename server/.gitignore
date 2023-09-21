@@ -1,0 +1,23 @@
+# Dependency directories
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Optional: Environment files
+.env
+
+# Optional: Editor files
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Dependency directory created by some tools
+bower_components/
+
+# Output files
+dist/
+build/
+*.min.js

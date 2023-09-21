@@ -1,0 +1,33 @@
+# Use root/example as user/password credentials
+# Use docker-compose -f docker-compose-maria.yml up -d
+
+#Definir no .env DB_NAME, DB_PASSWORD e DB_PORT
+
+version: '3'
+
+services:
+  postgres:
+    image: postgres:16.0
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  app:
+    container_name: app_container
+    build: .
+    ports:
+      - 3000:3000
+    depends_on:
+      postgres:
+        condition: "service_started"
+    volumes:
+      - .:/usr/src/app
+      
+volumes:
+  postgres_data:
