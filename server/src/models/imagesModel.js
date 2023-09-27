@@ -1,20 +1,18 @@
 import { Sequelize } from "sequelize";
 import db from "../database.js";
 
-export default db.define("client", {
+export default db.define("Images", {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
     autoIncrement: true,
     allowNull: false,
   },
-  nome: {
+  image: {
     type: Sequelize.STRING,
     allowNull: false,
-  },
-  email: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    unique: true,
-  },
+  }
 });
+
+
+

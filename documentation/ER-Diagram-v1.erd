@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram version="1" name="ER-Diagram-v1-1.erd">
+	<entities>
+		<data-source id="postgres-jdbc-18ad354a360-3b6dc0704bfb8597">
+			<entity id="1" name="ChildAllowedSnacks" fq-name="public.&quot;ChildAllowedSnacks&quot;" order="0" font="Segoe UI:9:0" x="550" y="572">
+				<path name="public"/>
+				<path name="test"/>
+			</entity>
+			<entity id="2" name="ChildSnackOrders" fq-name="public.&quot;ChildSnackOrders&quot;" order="1" font="Segoe UI:9:0" x="550" y="412">
+				<path name="public"/>
+				<path name="test"/>
+			</entity>
+			<entity id="3" name="Children" fq-name="public.&quot;Children&quot;" order="2" font="Segoe UI:9:0" x="350" y="372">
+				<path name="public"/>
+				<path name="test"/>
+			</entity>
+			<entity id="4" name="Images" fq-name="public.&quot;Images&quot;" order="3" font="Segoe UI:9:0" x="670" y="152">
+				<path name="public"/>
+				<path name="test"/>
+			</entity>
+			<entity id="5" name="Parents" fq-name="public.&quot;Parents&quot;" order="4" font="Segoe UI:9:0" x="150" y="412">
+				<path name="public"/>
+				<path name="test"/>
+			</entity>
+			<entity id="6" name="PasswordGroups" fq-name="public.&quot;PasswordGroups&quot;" order="5" font="Segoe UI:9:0" x="350" y="112">
+				<path name="public"/>
+				<path name="test"/>
+			</entity>
+			<entity id="7" name="Snacks" fq-name="public.&quot;Snacks&quot;" order="6" font="Segoe UI:9:0" x="830" y="412">
+				<path name="public"/>
+				<path name="test"/>
+			</entity>
+		</data-source>
+	</entities>
+	<relations>
+		<relation name="ChildAllowedSnacks_ChildId_fkey" fq-name="public.&quot;ChildAllowedSnacks&quot;.&quot;ChildAllowedSnacks_ChildId_fkey&quot;" type="fk" pk-ref="3" fk-ref="1"/>
+		<relation name="ChildSnackOrders_ChildId_fkey" fq-name="public.&quot;ChildSnackOrders&quot;.&quot;ChildSnackOrders_ChildId_fkey&quot;" type="fk" pk-ref="3" fk-ref="2"/>
+		<relation name="Children_passwordImageId_fkey" fq-name="public.&quot;Children&quot;.&quot;Children_passwordImageId_fkey&quot;" type="fk" pk-ref="4" fk-ref="3"/>
+		<relation name="PasswordGroups_image1Id_fkey" fq-name="public.&quot;PasswordGroups&quot;.&quot;PasswordGroups_image1Id_fkey&quot;" type="fk" pk-ref="4" fk-ref="6"/>
+		<relation name="PasswordGroups_image2Id_fkey" fq-name="public.&quot;PasswordGroups&quot;.&quot;PasswordGroups_image2Id_fkey&quot;" type="fk" pk-ref="4" fk-ref="6"/>
+		<relation name="PasswordGroups_image3Id_fkey" fq-name="public.&quot;PasswordGroups&quot;.&quot;PasswordGroups_image3Id_fkey&quot;" type="fk" pk-ref="4" fk-ref="6"/>
+		<relation name="PasswordGroups_image4Id_fkey" fq-name="public.&quot;PasswordGroups&quot;.&quot;PasswordGroups_image4Id_fkey&quot;" type="fk" pk-ref="4" fk-ref="6"/>
+		<relation name="PasswordGroups_image5Id_fkey" fq-name="public.&quot;PasswordGroups&quot;.&quot;PasswordGroups_image5Id_fkey&quot;" type="fk" pk-ref="4" fk-ref="6"/>
+		<relation name="PasswordGroups_image6Id_fkey" fq-name="public.&quot;PasswordGroups&quot;.&quot;PasswordGroups_image6Id_fkey&quot;" type="fk" pk-ref="4" fk-ref="6"/>
+		<relation name="Snacks_imageId_fkey" fq-name="public.&quot;Snacks&quot;.&quot;Snacks_imageId_fkey&quot;" type="fk" pk-ref="4" fk-ref="7"/>
+		<relation name="Children_parentId_fkey" fq-name="public.&quot;Children&quot;.&quot;Children_parentId_fkey&quot;" type="fk" pk-ref="5" fk-ref="3"/>
+		<relation name="Children_passwordGroupId_fkey" fq-name="public.&quot;Children&quot;.&quot;Children_passwordGroupId_fkey&quot;" type="fk" pk-ref="6" fk-ref="3"/>
+		<relation name="ChildAllowedSnacks_SnackId_fkey" fq-name="public.&quot;ChildAllowedSnacks&quot;.&quot;ChildAllowedSnacks_SnackId_fkey&quot;" type="fk" pk-ref="7" fk-ref="1"/>
+		<relation name="ChildSnackOrders_SnackId_fkey" fq-name="public.&quot;ChildSnackOrders&quot;.&quot;ChildSnackOrders_SnackId_fkey&quot;" type="fk" pk-ref="7" fk-ref="2"/>
+	</relations>
+</diagram>
