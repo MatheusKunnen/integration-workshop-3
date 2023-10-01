@@ -1,9 +1,9 @@
 import express from "express";
-import parents from "./src/controllers/parents.js";
-import images from "./src/controllers/images.js";
-import snacks from "./src/controllers/snacks.js";
-import children from "./src/controllers/children.js";
-import passwordGroups from "./src/controllers/passwordGroups.js";
+import parents from "../app/controllers/parents.js";
+import images from "../app/controllers/images.js";
+import snacks from "../app/controllers/snacks.js";
+import children from "../app/controllers/children.js";
+import passwordGroups from "../app/controllers/passwordGroups.js";
 
 const routes = express.Router();
 

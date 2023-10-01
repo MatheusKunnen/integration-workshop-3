@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize";
-import db from "../database.js";
+import db from "../../database/database_config.js";
 import Snacks from './snacksModel.js';
 
 const Children = db.define("Children", {
