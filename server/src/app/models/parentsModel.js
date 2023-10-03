@@ -1,31 +1,26 @@
 import { Sequelize } from "sequelize";
-import db from "../database.js";
+import db from "../../database/database_config.js";
 
-export default db.define("Snacks", {
+export default db.define("Parents", {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
     autoIncrement: true,
     allowNull: false,
   },
-  name: {
+  email: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true,
+    },
+  },
+  password: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  imageId: {
-    type: Sequelize.INTEGER,
-    references: { model: 'Images', key: 'id' },
-    allowNull: false,
-  },
-  ingredients: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-  price: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-  },
-  stock: {
+  balance: {
     type: Sequelize.INTEGER,
     allowNull: false,
     defaultValue: 0,
