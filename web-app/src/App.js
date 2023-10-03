@@ -1,25 +1,19 @@
-import logo from './logo.svg';
+import { Routes, Route } from "react-router-dom"
+import NFCAuth from "./pages/LoginPages/NFCAuth"
+import ImageAuth from "./pages/LoginPages/ImageAuth"
+import FailedAuth from "./pages/LoginPages/FailedAuth"
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Routes>
+        <Route path="/" element={ <NFCAuth/> } />
+        <Route path="image-auth" element={ <ImageAuth/> } />
+        <Route path="failed-auth" element={ <FailedAuth/> } />
+      </Routes>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
