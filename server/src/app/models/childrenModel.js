@@ -31,6 +31,7 @@ const Children = db.define("Children", {
   tagNumber: {
     type: Sequelize.STRING,
     allowNull: false,
+    unique: true,
   },
   budget: {
     type: Sequelize.INTEGER,

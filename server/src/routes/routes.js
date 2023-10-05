@@ -13,9 +13,12 @@ routes.post("/parents", parents.createParent);
 routes.post("/parents/login", parents.loginParent);
 routes.get("/parents/:id", verifyToken, parents.findParent);
 
+routes.get("/children", children.findAll);
+routes.post("/children", verifyToken, children.createChild);
+routes.post("/children/login", children.loginChild);
+
 routes.get("/images", images.findAll);
 routes.get("/password-groups", passwordGroups.findAll);
 routes.get("/snacks", snacks.findAll);
-routes.get("/children", children.findAll);
 
 export { routes as default };
