@@ -1,10 +1,14 @@
 import express from "express";
 import routes from "./src/routes/routes.js";
+import parentsRoutes from "./src/routes/parents.routes.js";
 import db from "./src/database/database_config.js";
+import childrenRoutes from "./src/routes/children.routes.js";
 
 const app = express();
 
 app.use(express.json());
+app.use("/parents", parentsRoutes);
+app.use("/children", childrenRoutes);
 app.use(routes);
 
 db.sync()
