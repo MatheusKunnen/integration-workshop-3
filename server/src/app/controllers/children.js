@@ -77,10 +77,55 @@ async function getByTagNumber(req, res) {
     ] 
   })
   if(child) {
-    console.log(child);
     return res.status(200).json({ child });
   }
   return res.status(400).json("Couldn't find children");
+}
+
+async function getByParentId(req, res) {
+  const id = req.params.id;
+
+  if(req.user.parent_id != id){
+    return res.status(401).send("You can't see another parent's children. Use your ID");
+  }
+
+  const child = await ChildrenRepository.findAll({
+    where: { parentId: id }, 
+    attributes: { exclude: ['createdAt', 'updatedAt', 'parentId', 'passwordGroupId', 'passwordImageId'] },
+    include: [
+      { 
+        model: Parents, 
+        as: 'parent',
+        attributes: { exclude: ['password', 'balance', 'createdAt', 'updatedAt'] },
+      },
+      { 
+        model: Images, 
+        as: 'passwordImage',
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+      },
+      {
+        model: PasswordGroups,
+        as: 'passwordGroup',
+        attributes: { exclude: ['image1Id', 'image2Id', 'image3Id', 'image4Id', 'image5Id', 'image6Id', 'createdAt', 'updatedAt'] },
+        include: [
+          { model: Images, as: 'image1', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image2', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image3', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image4', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image5', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image6', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+        ],
+      },
+      { 
+        model: Snacks, 
+        through: 'ChildAllowedSnacks' 
+      },
+    ] 
+  })
+  if(child) {
+    return res.status(200).json({ child });
+  }
+  return res.status(400).json("Couldn't find any children");
 }
 
 async function createChild(req, res) {
@@ -165,4 +210,4 @@ async function loginChild(req, res) {
   }
 }
 
-export default { findAll, createChild, loginChild, getByTagNumber };
+export default { findAll, createChild, loginChild, getByTagNumber, getByParentId };

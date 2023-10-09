@@ -9,7 +9,7 @@
 - [x] Register Child (POST/parents/register-child)
     - [x] Get One Password Group (GET/password-group/:id)
     - [x] Get Snack Options (GET/snacks)
-- [ ] Get Children from a parent (GET/children/parents/:id)
+- [x] Get Children from a parent (GET/children/parents/:id)
 - View Account Details
     - [ ] Update Child Info (PATCH/children) -- update name, tagNumber and passwordImageId
     - [ ] Delete Child (DELETE/children/:id)
