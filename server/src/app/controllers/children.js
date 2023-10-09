@@ -130,7 +130,8 @@ async function getByParentId(req, res) {
 
 async function createChild(req, res) {
   try {
-    const { parentId, passwordImageId, passwordGroupId, name, tagNumber, budget } = req.body
+    const { passwordImageId, passwordGroupId, name, tagNumber, budget } = req.body
+    const parentId = req.user.parent_id;
 
     // Check if all inputs were given
     if(!( parentId != undefined && 
@@ -142,11 +143,6 @@ async function createChild(req, res) {
       )) 
     {
       return res.status(400).send("All inputs are required");
-    }
-    
-    // Check if parentId is from the parent that is trying to create a child register
-    if(req.user.parent_id != parentId){
-      return res.status(401).send("You can't create a child for another parent. Use your ID");
     }
 
     // Check if there is already a child with same tag number
@@ -210,4 +206,98 @@ async function loginChild(req, res) {
   }
 }
 
-export default { findAll, createChild, loginChild, getByTagNumber, getByParentId };
+async function updateChild(req, res) {
+  const { id } = req.params;
+  const {
+    name,
+    tagNumber,
+    passwordImageId
+  } = req.body;
+
+  if(!(passwordImageId != undefined && 
+       name != undefined && 
+       tagNumber != undefined
+  )) {
+    return res.status(400).send("name, tagNumber and passwordImageId are required");
+  } 
+
+  const child = await ChildrenRepository.findByPk(id);
+  if(!child) {
+    return res.status(404).send("Child not found");
+  }
+
+  if(req.user.parent_id != child.parentId){
+    return res.status(401).send("You can't update a child that isn't yours");
+  }
+
+  // If tagNumber is being updated, check if there is already a child with same tag number
+  if(child.tagNumber != tagNumber) {
+    const childWithSameTagNumber = await ChildrenRepository.findOne({ where: { tagNumber } })
+    if (childWithSameTagNumber) {
+      return res.status(409).send("There's already a child with this tagNumber");
+    }
+  }
+
+  child.name = name;
+  child.tagNumber = tagNumber;
+  child.passwordImageId = passwordImageId;
+  await child.save();
+
+  const updatedChild = await ChildrenRepository.findOne({
+    where: { id }, 
+    attributes: { exclude: ['createdAt', 'updatedAt', 'parentId', 'passwordGroupId', 'passwordImageId'] },
+    include: [
+      { 
+        model: Parents, 
+        as: 'parent',
+        attributes: { exclude: ['password', 'balance', 'createdAt', 'updatedAt'] },
+      },
+      { 
+        model: Images, 
+        as: 'passwordImage',
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+      },
+      {
+        model: PasswordGroups,
+        as: 'passwordGroup',
+        attributes: { exclude: ['image1Id', 'image2Id', 'image3Id', 'image4Id', 'image5Id', 'image6Id', 'createdAt', 'updatedAt'] },
+        include: [
+          { model: Images, as: 'image1', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image2', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image3', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image4', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image5', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image6', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+        ],
+      },
+      { 
+        model: Snacks, 
+        through: 'ChildAllowedSnacks' 
+      },
+    ] 
+  })
+  if(updatedChild) {
+    return res.status(200).json({ child: updatedChild });
+  }
+
+  return res.status(500);
+}
+
+async function deleteChild(req, res) {
+  const { id } = req.params;
+
+  const child = await ChildrenRepository.findByPk(id);
+  if(!child) {
+    return res.status(404).send("Child not found");
+  }
+
+  if(req.user.parent_id != child.parentId){
+    return res.status(401).send("You can't delete a child that isn't yours");
+  }
+
+  await child.destroy();
+
+  return res.status(204).send(); 
+}
+
+export default { findAll, createChild, loginChild, getByTagNumber, getByParentId, updateChild, deleteChild };

@@ -11,8 +11,8 @@
     - [x] Get Snack Options (GET/snacks)
 - [x] Get Children from a parent (GET/children/parents/:id)
 - View Account Details
-    - [ ] Update Child Info (PATCH/children) -- update name, tagNumber and passwordImageId
-    - [ ] Delete Child (DELETE/children/:id)
+    - [x] Update Child Info (PATCH/children/:id) -- update name, tagNumber and passwordImageId
+    - [x] Delete Child (DELETE/children/:id)
 - Budget & Snacks
     - [ ] Update Budget (PATCH/children/budget)
     - [ ] Update Allowed Snacks (PUT/children/snacks)
