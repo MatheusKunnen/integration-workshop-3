@@ -1,7 +1,8 @@
 import { Sequelize } from "sequelize";
 import db from "../../database/database_config.js";
+import Images from "./imagesModel.js";
 
-export default db.define("Snacks", {
+const Snacks = db.define("Snacks", {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
@@ -31,3 +32,7 @@ export default db.define("Snacks", {
     defaultValue: 0,
   },
 });
+
+Snacks.belongsTo(Images, { foreignKey: 'imageId', as: 'image' });
+
+export default Snacks;

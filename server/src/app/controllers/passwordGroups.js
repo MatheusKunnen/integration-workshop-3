@@ -5,12 +5,12 @@ function findAll(req, res) {
   PasswordGroupsRepository.findAll({
     attributes: { exclude: ['image1Id', 'image2Id', 'image3Id', 'image4Id', 'image5Id', 'image6Id', 'createdAt', 'updatedAt'] },
     include: [
-      { model: Images, as: 'image1' },
-      { model: Images, as: 'image2' },
-      { model: Images, as: 'image3' },
-      { model: Images, as: 'image4' },
-      { model: Images, as: 'image5' },
-      { model: Images, as: 'image6' },
+      { model: Images, as: 'image1', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+      { model: Images, as: 'image2', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+      { model: Images, as: 'image3', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+      { model: Images, as: 'image4', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+      { model: Images, as: 'image5', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+      { model: Images, as: 'image6', attributes: { exclude: ['createdAt', 'updatedAt'] } },
     ]
   }).then((result) => res.json(result));
 }
