@@ -64,10 +64,10 @@ const ImageAuth = (props) => {
 
   return (
     <Wrapper>
-      <Header>
+      <TextContainer>
         <Icon src={ImageIcon} alt="Icon" />
         <H3>select your image:</H3>
-      </Header>
+      </TextContainer>
       <ImageContainer>
         {Object.entries(images).map(([key, value]) => (
           <div onClick={handleClick()} style={{cursor: 'pointer'}}>
@@ -92,11 +92,13 @@ export default ImageAuth;
 const Wrapper = styled.div`
   background-color: var(--color-primary-light);
   height: 100%;
-  display: block;
-  padding: 20% 15%;
+  padding: 15% 15%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
-const Header = styled.div`
+const TextContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -107,14 +109,13 @@ const Icon = styled.img`
   margin-right: 10px;
 `;
 
-
 const ImageContainer = styled.div`
-  display: block;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 60px;
   justify-content: center;
-  column-count: 2;
-  padding: 5px;
 `;
 
 const Image = styled.img`
-  padding: 20px;
+  cursor: pointer;
 `;
