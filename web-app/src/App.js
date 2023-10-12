@@ -1,25 +1,29 @@
-import logo from './logo.svg';
+import { Routes, Route } from "react-router-dom"
+import NFCAuth from "./pages/LoginPages/NFCAuth"
+import ImageAuth from "./pages/LoginPages/ImageAuth"
+import FailedAuth from "./pages/LoginPages/FailedAuth"
+import ProductSelection from "./pages/OrderPages/ProductSelection"
+import ProductSelected from "./pages/OrderPages/ProductSelected"
+import OrderProcessing from "./pages/ResponsePages/OrderProcessing"
+import OrderFinished from "./pages/ResponsePages/OrderFinished"
+import OrderError from "./pages/ResponsePages/OrderError"
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Routes>
+        <Route path="/" element={ <NFCAuth/> } />
+        <Route path="image-auth" element={ <ImageAuth/> } />
+        <Route path="failed-auth" element={ <FailedAuth/> } />
+        <Route path="product-selection" element={ <ProductSelection/> } />
+        <Route path="product-selected" element={ <ProductSelected/> } />
+        <Route path="order-processing" element={ <OrderProcessing/> } />
+        <Route path="order-finished" element={ <OrderFinished/> } />
+        <Route path="order-error" element={ <OrderError/> } />
+      </Routes>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
