@@ -4,7 +4,9 @@ import * as Colors from '../utils/colors.js';
 import CustomButton from '../components/CustomButton';
 import ChildCard from '../components/ChildCard';
 
-function Home({username = 'Username'}) {
+function Home({ route, navigation }) {
+
+    const { username } = route.params;
 
     const children = [{name: 'Ana', balance: '10,95'}, {name:'João', balance: '8,75'}];
     
@@ -13,7 +15,7 @@ function Home({username = 'Username'}) {
         <View style={styles.topContainer}>
             <View style={styles.topSection}>
                 <Image source={require('../assets/big_user_icon.png')} style={styles.icon} />
-                <Text style={styles.greeting}>Hello, {username}!</Text>
+                <Text style={styles.greeting}>{`Hello, ${username}!`}</Text>
             </View>
 
             <ScrollView style={styles.cardSection}>

@@ -11,10 +11,12 @@ import {
 import * as Colors from '../utils/colors.js';
 import CustomButton from '../components/CustomButton.jsx';
 import CustomTextInput from '../components/CustomTextInput.jsx';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-function Login () {
+function Login ({ navigation }) {
 
-  const [text, setText] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   return (
@@ -32,8 +34,8 @@ function Login () {
       <CustomTextInput 
         iconSource={require('../assets/user_icon.png')}
         placeholder="Username"
-        onChangeText={setText}
-        value={text}
+        onChangeText={setUsername}
+        value={username}
       />
 
       <CustomTextInput 
@@ -47,7 +49,7 @@ function Login () {
       <CustomButton 
         title="Login" 
         colorScheme="dark"
-        onPress={() => console.log('Login button pressed')}
+        onPress={() => username !== '' && password !== '' ? navigation.navigate('Home', {username: username}) : alert('Invalid username or password')}
       />
 
       <CustomButton 
