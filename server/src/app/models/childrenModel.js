@@ -48,8 +48,14 @@ const Children = db.define("Children", {
   }
 });
 
-Children.belongsToMany(Snacks, { through: 'ChildAllowedSnacks' });
-Snacks.belongsToMany(Children, { through: 'ChildAllowedSnacks' });
+Children.belongsToMany(Snacks, {
+  through: 'ChildAllowedSnacks',
+  as: 'AllowedSnacks'
+});
+Snacks.belongsToMany(Children, {
+  through: 'ChildAllowedSnacks',
+  as: 'AllowedChildren'
+});
 
 const ChildSnackOrders = db.define('ChildSnackOrders', {
   Price: {
@@ -58,8 +64,15 @@ const ChildSnackOrders = db.define('ChildSnackOrders', {
   }
 });
 
-Children.belongsToMany(Snacks, { through: ChildSnackOrders });
-Snacks.belongsToMany(Children, { through: ChildSnackOrders });
+Children.belongsToMany(Snacks, {
+  through: ChildSnackOrders,
+  as: 'OrderedSnacks'
+});
+
+Snacks.belongsToMany(Children, {
+  through: ChildSnackOrders,
+  as: 'OrderedChildren'
+});
 
 Children.belongsTo(Parents, { foreignKey: 'parentId', as: 'parent' });
 Children.belongsTo(Images, { foreignKey: 'passwordImageId', as: 'passwordImage' });
