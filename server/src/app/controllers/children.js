@@ -6,57 +6,13 @@ import Images from "../models/imagesModel.js";
 import PasswordGroups from "../models/passwordGroupsModel.js";
 import Snacks from "../models/snacksModel.js";
 
-function findAll(req, res) {
-  ChildrenRepository.findAll({
-    attributes: { exclude: ['createdAt', 'updatedAt', 'parentId', 'passwordGroupId', 'passwordImageId'] },
-    include: [
-      { 
-        model: Parents, 
-        as: 'parent',
-        attributes: { exclude: ['password', 'balance', 'createdAt', 'updatedAt'] },
-      },
-      { 
-        model: Images, 
-        as: 'passwordImage',
-        attributes: { exclude: ['createdAt', 'updatedAt'] },
-      },
-      {
-        model: PasswordGroups,
-        as: 'passwordGroup',
-        attributes: { exclude: ['image1Id', 'image2Id', 'image3Id', 'image4Id', 'image5Id', 'image6Id', 'createdAt', 'updatedAt'] },
-        include: [
-          { model: Images, as: 'image1', attributes: { exclude: ['createdAt', 'updatedAt'] } },
-          { model: Images, as: 'image2', attributes: { exclude: ['createdAt', 'updatedAt'] } },
-          { model: Images, as: 'image3', attributes: { exclude: ['createdAt', 'updatedAt'] } },
-          { model: Images, as: 'image4', attributes: { exclude: ['createdAt', 'updatedAt'] } },
-          { model: Images, as: 'image5', attributes: { exclude: ['createdAt', 'updatedAt'] } },
-          { model: Images, as: 'image6', attributes: { exclude: ['createdAt', 'updatedAt'] } },
-        ],
-      },
-      { 
-        model: Snacks, 
-        through: 'ChildAllowedSnacks' 
-      },
-    ] 
-  }).then((result) => res.json(result));
-}
-
 async function getByTagNumber(req, res) {
   const tagNumber = req.params.tagNumber;
+
   const child = await ChildrenRepository.findOne({
     where: { tagNumber }, 
-    attributes: { exclude: ['createdAt', 'updatedAt', 'parentId', 'passwordGroupId', 'passwordImageId'] },
+    attributes: { exclude: ['createdAt', 'updatedAt', 'parentId', 'passwordGroupId', 'passwordImageId', 'name'] },
     include: [
-      { 
-        model: Parents, 
-        as: 'parent',
-        attributes: { exclude: ['password', 'balance', 'createdAt', 'updatedAt'] },
-      },
-      { 
-        model: Images, 
-        as: 'passwordImage',
-        attributes: { exclude: ['createdAt', 'updatedAt'] },
-      },
       {
         model: PasswordGroups,
         as: 'passwordGroup',
@@ -71,25 +27,25 @@ async function getByTagNumber(req, res) {
         ],
       },
       { 
-        model: Snacks, 
-        through: 'ChildAllowedSnacks' 
+        model: Snacks,
+        as: 'AllowedSnacks',
+        attributes: { exclude: ['createdAt', 'updatedAt', 'imageId', 'ingredients', 'price', 'stock', 'name'] },
+        through: { attributes: [] },
       },
     ] 
   })
+
   if(child) {
-    return res.status(200).json({ child });
+    const responseChild = updateChildAllowedSnacksArray(child);
+    return res.status(200).json(responseChild);
   }
   return res.status(400).json("Couldn't find children");
 }
 
 async function getByParentId(req, res) {
-  const id = req.params.id;
+  const id = req.user.parent_id
 
-  if(req.user.parent_id != id){
-    return res.status(401).send("You can't see another parent's children. Use your ID");
-  }
-
-  const child = await ChildrenRepository.findAll({
+  const children = await ChildrenRepository.findAll({
     where: { parentId: id }, 
     attributes: { exclude: ['createdAt', 'updatedAt', 'parentId', 'passwordGroupId', 'passwordImageId'] },
     include: [
@@ -98,11 +54,6 @@ async function getByParentId(req, res) {
         as: 'parent',
         attributes: { exclude: ['password', 'balance', 'createdAt', 'updatedAt'] },
       },
-      { 
-        model: Images, 
-        as: 'passwordImage',
-        attributes: { exclude: ['createdAt', 'updatedAt'] },
-      },
       {
         model: PasswordGroups,
         as: 'passwordGroup',
@@ -117,20 +68,24 @@ async function getByParentId(req, res) {
         ],
       },
       { 
-        model: Snacks, 
-        through: 'ChildAllowedSnacks' 
+        model: Snacks,
+        as: 'AllowedSnacks',
+        attributes: { exclude: ['createdAt', 'updatedAt', 'imageId', 'ingredients', 'price', 'stock', 'name'] },
+        through: { attributes: [] },
       },
     ] 
   })
-  if(child) {
-    return res.status(200).json({ child });
+
+  if(children) {
+    const responseChildren = children.map(child => updateChildAllowedSnacksArray(child));
+    return res.status(200).json(responseChildren);
   }
   return res.status(400).json("Couldn't find any children");
 }
 
 async function createChild(req, res) {
   try {
-    const { passwordImageId, passwordGroupId, name, tagNumber, budget } = req.body
+    const { passwordImageId, passwordGroupId, name, tagNumber, budget, allowedSnacks } = req.body
     const parentId = req.user.parent_id;
 
     // Check if all inputs were given
@@ -168,14 +123,56 @@ async function createChild(req, res) {
       return res.status(400).send("Image is not in the Password Group");
     }
   
-    return ChildrenRepository.create({
+    const newChild = await ChildrenRepository.create({
       parentId,
       passwordImageId,
       passwordGroupId,
       name,
       tagNumber,
       budget
-    }).then((result) => res.status(201).json(result));  
+    });
+
+    // Associate the Child with the AllowedSnacks
+    if (allowedSnacks && allowedSnacks.length > 0) {
+      await newChild.addAllowedSnacks(allowedSnacks);
+      await newChild.save();
+    }
+
+    const childWithAllowedSnacks = await ChildrenRepository.findByPk(newChild.id, {
+      attributes: { exclude: ['createdAt', 'updatedAt', 'parentId', 'passwordGroupId', 'passwordImageId'] },
+      include: [
+        { 
+          model: Parents, 
+          as: 'parent',
+          attributes: { exclude: ['password', 'balance', 'createdAt', 'updatedAt'] },
+        },
+        {
+          model: PasswordGroups,
+          as: 'passwordGroup',
+          attributes: { exclude: ['image1Id', 'image2Id', 'image3Id', 'image4Id', 'image5Id', 'image6Id', 'createdAt', 'updatedAt'] },
+          include: [
+            { model: Images, as: 'image1', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+            { model: Images, as: 'image2', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+            { model: Images, as: 'image3', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+            { model: Images, as: 'image4', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+            { model: Images, as: 'image5', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+            { model: Images, as: 'image6', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          ],
+        },
+        { 
+          model: Snacks,
+          as: 'AllowedSnacks',
+          attributes: { exclude: ['createdAt', 'updatedAt', 'imageId', 'ingredients', 'price', 'stock', 'name'] },
+          through: { attributes: [] },
+        },
+      ] 
+    });
+
+    if(childWithAllowedSnacks) {
+      const responseChild = updateChildAllowedSnacksArray(childWithAllowedSnacks);
+      return res.status(201).json(responseChild); 
+    }
+    return res.status(500).send("Error");
   } catch(err) {
     return res.status(500).json(err);
   }
@@ -252,11 +249,6 @@ async function updateChild(req, res) {
         as: 'parent',
         attributes: { exclude: ['password', 'balance', 'createdAt', 'updatedAt'] },
       },
-      { 
-        model: Images, 
-        as: 'passwordImage',
-        attributes: { exclude: ['createdAt', 'updatedAt'] },
-      },
       {
         model: PasswordGroups,
         as: 'passwordGroup',
@@ -271,13 +263,16 @@ async function updateChild(req, res) {
         ],
       },
       { 
-        model: Snacks, 
-        through: 'ChildAllowedSnacks' 
+        model: Snacks,
+        as: 'AllowedSnacks',
+        attributes: { exclude: ['createdAt', 'updatedAt', 'imageId', 'ingredients', 'price', 'stock', 'name'] },
+        through: { attributes: [] },
       },
     ] 
   })
   if(updatedChild) {
-    return res.status(200).json({ child: updatedChild });
+    const responseChild = updateChildAllowedSnacksArray(updatedChild);
+    return res.status(200).json(responseChild);
   }
 
   return res.status(500);
@@ -300,4 +295,134 @@ async function deleteChild(req, res) {
   return res.status(204).send(); 
 }
 
-export default { findAll, createChild, loginChild, getByTagNumber, getByParentId, updateChild, deleteChild };
+async function updateBudget(req, res) {
+  const { id } = req.params;
+  const { budget } = req.body;
+
+  if(!(budget != undefined)) {
+    return res.status(400).send("The budget is required");
+  } 
+
+  const child = await ChildrenRepository.findByPk(id);
+  if(!child) {
+    return res.status(404).send("Child not found");
+  }
+
+  if(req.user.parent_id != child.parentId){
+    return res.status(401).send("You can't update a child that isn't yours");
+  }
+
+  child.budget = budget;
+  await child.save();
+
+  const updatedChild = await ChildrenRepository.findOne({
+    where: { id }, 
+    attributes: { exclude: ['createdAt', 'updatedAt', 'parentId', 'passwordGroupId', 'passwordImageId'] },
+    include: [
+      { 
+        model: Parents, 
+        as: 'parent',
+        attributes: { exclude: ['password', 'balance', 'createdAt', 'updatedAt'] },
+      },
+      {
+        model: PasswordGroups,
+        as: 'passwordGroup',
+        attributes: { exclude: ['image1Id', 'image2Id', 'image3Id', 'image4Id', 'image5Id', 'image6Id', 'createdAt', 'updatedAt'] },
+        include: [
+          { model: Images, as: 'image1', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image2', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image3', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image4', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image5', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image6', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+        ],
+      },
+      { 
+        model: Snacks,
+        as: 'AllowedSnacks',
+        attributes: { exclude: ['createdAt', 'updatedAt', 'imageId', 'ingredients', 'price', 'stock', 'name'] },
+        through: { attributes: [] },
+      },
+    ] 
+  })
+  if(updatedChild) {
+    const responseChild = updateChildAllowedSnacksArray(updatedChild);
+    return res.status(200).json(responseChild);
+  }
+
+  return res.status(500);
+}
+
+async function updateAllowedSnacks(req, res) {
+  const { id } = req.params;
+  const { allowedSnacks } = req.body;
+
+  const child = await ChildrenRepository.findByPk(id, {
+    include: [
+      { 
+        model: Snacks,
+        as: 'AllowedSnacks',
+        attributes: { exclude: ['createdAt', 'updatedAt', 'imageId', 'ingredients', 'price', 'stock', 'name'] },
+        through: { attributes: [] },
+      },
+    ]
+  });
+
+  if(!child) {
+    return res.status(404).send("Child not found");
+  }
+
+  if(req.user.parent_id != child.parentId){
+    return res.status(401).send("You can't update a child that isn't yours");
+  }
+
+  const oldAllowedSnacks = child?.AllowedSnacks?.map((snack) => snack.id);
+  await child.removeAllowedSnacks(oldAllowedSnacks);
+  await child.addAllowedSnacks(allowedSnacks);
+  await child.save();
+
+  const updatedChild = await ChildrenRepository.findByPk(id, {
+    attributes: { exclude: ['createdAt', 'updatedAt', 'parentId', 'passwordGroupId', 'passwordImageId'] },
+    include: [
+      { 
+        model: Parents, 
+        as: 'parent',
+        attributes: { exclude: ['password', 'balance', 'createdAt', 'updatedAt'] },
+      },
+      {
+        model: PasswordGroups,
+        as: 'passwordGroup',
+        attributes: { exclude: ['image1Id', 'image2Id', 'image3Id', 'image4Id', 'image5Id', 'image6Id', 'createdAt', 'updatedAt'] },
+        include: [
+          { model: Images, as: 'image1', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image2', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image3', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image4', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image5', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+          { model: Images, as: 'image6', attributes: { exclude: ['createdAt', 'updatedAt'] } },
+        ],
+      },
+      { 
+        model: Snacks,
+        as: 'AllowedSnacks',
+        attributes: { exclude: ['createdAt', 'updatedAt', 'imageId', 'ingredients', 'price', 'stock', 'name'] },
+        through: { attributes: [] },
+      },
+    ] 
+  })
+
+  if(updatedChild) {
+    const responseChild = updateChildAllowedSnacksArray(updatedChild);
+    return res.status(200).json(responseChild)
+  }
+}
+
+function updateChildAllowedSnacksArray(child) {
+  const responseChild = JSON.parse(JSON.stringify(child));
+  responseChild.allowedSnacks = responseChild?.AllowedSnacks?.map((snack) => snack.id);
+  delete responseChild.AllowedSnacks;
+
+  return responseChild;
+}
+
+export default { createChild, loginChild, getByTagNumber, getByParentId, updateChild, deleteChild, updateBudget, updateAllowedSnacks };
