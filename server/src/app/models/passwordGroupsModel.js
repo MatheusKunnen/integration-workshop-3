@@ -1,7 +1,8 @@
 import { Sequelize } from "sequelize";
 import db from "../../database/database_config.js";
+import Images from "./imagesModel.js";
 
-export default db.define("PasswordGroups", {
+ const PasswordGroups = db.define("PasswordGroups", {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
@@ -39,3 +40,12 @@ export default db.define("PasswordGroups", {
     allowNull: false,
   },
 });
+
+PasswordGroups.belongsTo(Images, { foreignKey: 'image1Id', as: 'image1' });
+PasswordGroups.belongsTo(Images, { foreignKey: 'image2Id', as: 'image2' });
+PasswordGroups.belongsTo(Images, { foreignKey: 'image3Id', as: 'image3' });
+PasswordGroups.belongsTo(Images, { foreignKey: 'image4Id', as: 'image4' });
+PasswordGroups.belongsTo(Images, { foreignKey: 'image5Id', as: 'image5' });
+PasswordGroups.belongsTo(Images, { foreignKey: 'image6Id', as: 'image6' });
+
+export default PasswordGroups;

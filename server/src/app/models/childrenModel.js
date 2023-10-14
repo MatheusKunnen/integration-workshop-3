@@ -1,6 +1,9 @@
 import { Sequelize } from "sequelize";
 import db from "../../database/database_config.js";
 import Snacks from './snacksModel.js';
+import Parents from "./parentsModel.js";
+import Images from "./imagesModel.js";
+import PasswordGroups from "./passwordGroupsModel.js";
 
 const Children = db.define("Children", {
   id: {
@@ -31,6 +34,7 @@ const Children = db.define("Children", {
   tagNumber: {
     type: Sequelize.STRING,
     allowNull: false,
+    unique: true,
   },
   budget: {
     type: Sequelize.INTEGER,
@@ -44,17 +48,18 @@ const Children = db.define("Children", {
   }
 });
 
-export default Children;
-
-Children.belongsToMany(Snacks, { through: 'ChildAllowedSnacks' });
-Snacks.belongsToMany(Children, { through: 'ChildAllowedSnacks' });
-
-const ChildSnackOrders = db.define('ChildSnackOrders', {
-  Price: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-  }
+Children.belongsToMany(Snacks, {
+  through: 'ChildAllowedSnacks',
+  as: 'AllowedSnacks'
 });
 
-Children.belongsToMany(Snacks, { through: ChildSnackOrders });
-Snacks.belongsToMany(Children, { through: ChildSnackOrders });
+Snacks.belongsToMany(Children, {
+  through: 'ChildAllowedSnacks',
+  as: 'AllowedChildren'
+});
+
+Children.belongsTo(Parents, { foreignKey: 'parentId', as: 'parent' });
+Children.belongsTo(Images, { foreignKey: 'passwordImageId', as: 'passwordImage' });
+Children.belongsTo(PasswordGroups, { foreignKey: 'passwordGroupId', as: 'passwordGroup' });
+
+export default Children;

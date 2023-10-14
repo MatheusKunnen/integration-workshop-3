@@ -1,0 +1,16 @@
+# Dockerfile for seeding service
+FROM node:16
+
+RUN mkdir -p /seeders
+
+COPY package.json seeders/package.json
+
+WORKDIR /seeders
+
+RUN npm install
+
+COPY . /seeders
+
+RUN npm install
+
+CMD ["sh", "-c", "if [ \"$CREATE_SEEDS\" = \"true\" ]; then node src/database/seeders/main.js; fi"]

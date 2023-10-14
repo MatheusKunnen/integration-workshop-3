@@ -2,15 +2,9 @@ import ParentsRepository from "../models/parentsModel.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-function findAll(req, res) {
-  return ParentsRepository.findAll().then((result) => res.json(result));
-}
-
 function findParent(req, res) {
-  if(req.user.parent_id != req.params.id){
-    return res.status(401).send("Can't get information of another user");
-  }
-  return ParentsRepository.findByPk(req.params.id).then((result) => res.json(result));
+  const id = req.user.parent_id;
+  return ParentsRepository.findByPk(id).then((result) => res.status(200).json(result));
 }
 
 async function createParent(req, res) {
@@ -63,5 +57,23 @@ async function loginParent(req, res) {
   }
 }
 
+async function updateBalance(req, res) {
+  const { parent_id } = req.params;
+  const { balance } = req.body;
 
-export default { findAll, createParent, findParent, loginParent };
+  const parent = await ParentsRepository.findByPk(parent_id);
+  if(!parent) {
+    return res.status(500).send("Couldn't find parent");
+  }
+
+  try {
+    parent.balance = balance;
+    await parent.save();
+    return res.status(200).json(parent);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Failed to update parent balance");
+  }
+}
+
+export default { createParent, findParent, loginParent, updateBalance };

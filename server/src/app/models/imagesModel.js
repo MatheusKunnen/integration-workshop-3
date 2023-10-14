@@ -8,7 +8,7 @@ export default db.define("Images", {
     autoIncrement: true,
     allowNull: false,
   },
-  image: {
+  url: {
     type: Sequelize.STRING,
     allowNull: false,
   }
