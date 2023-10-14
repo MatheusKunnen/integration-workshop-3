@@ -20,5 +20,5 @@
 - [x] Get Order History (GET/children/history/:id)
 
 ## For debug:
-- [] Set parent balance
-- [] Update snack
+- [x] Update parent balance
+- [x] Update snack stock

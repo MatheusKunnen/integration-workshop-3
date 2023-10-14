@@ -57,4 +57,23 @@ async function loginParent(req, res) {
   }
 }
 
-export default { createParent, findParent, loginParent };
+async function updateBalance(req, res) {
+  const { parent_id } = req.params;
+  const { balance } = req.body;
+
+  const parent = await ParentsRepository.findByPk(parent_id);
+  if(!parent) {
+    return res.status(500).send("Couldn't find parent");
+  }
+
+  try {
+    parent.balance = balance;
+    await parent.save();
+    return res.status(200).json(parent);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Failed to update parent balance");
+  }
+}
+
+export default { createParent, findParent, loginParent, updateBalance };

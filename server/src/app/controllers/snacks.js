@@ -72,4 +72,23 @@ async function purchase(req, res) {
   return res.status(500).send("Failed to complete order");
 }
 
-export default { findAll, purchase };
+async function updateStock(req, res) {
+  const { id } = req.params;
+  const { stock } = req.body;
+
+  const snack = await Snacks.findByPk(id);
+  if(!snack) {
+    return res.status(500).send("Couldn't find snack");
+  }
+
+  try {
+    snack.stock = stock;
+    await snack.save();
+    return res.status(200).json(snack);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Failed to update stock");
+  }
+}
+
+export default { findAll, purchase, updateStock };
