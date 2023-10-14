@@ -10,6 +10,7 @@ app.use(express.json());
 app.use("/parents", parentsRoutes);
 app.use("/children", childrenRoutes);
 app.use(routes);
+app.use('/image', express.static('images'));
 
 db.sync()
     .then(() => {
@@ -19,5 +20,5 @@ db.sync()
         console.error('Erro ao sincronizar tabelas:', error);
     });
 
-app.listen(3000, () => console.log("Servidor iniciado na porta 3000"));
+app.listen(process.env.PORT, () => console.log("Servidor iniciado na porta 3000"));
 
