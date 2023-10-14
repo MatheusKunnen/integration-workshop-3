@@ -1,3 +1,4 @@
+# The endpoints used for testing the API can be imported in Insomnia using the InsomniaHTTPRequests.json file.
 ## Vending Machine
 - [x] Get child by NFC tag Number (/children/:nfc_tag)
 - [x] Login child (/children/login)
