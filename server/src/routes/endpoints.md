@@ -1,7 +1,7 @@
 ## Vending Machine
 - [x] Get child by NFC tag Number (/children/:nfc_tag)
 - [x] Login child (/children/login)
-- [ ] Purchase (/snacks/purchase/:id)
+- [x] Purchase (/snacks/purchase/:id)
 - [x] Get Snack Options (GET/snacks)
 
 ## Mobile App
@@ -18,3 +18,7 @@
     - [x] Update Budget (PATCH/children/:id/budget)
     - [x] Update Allowed Snacks (PATCH/children/:id/snacks)
 - [x] Get Order History (GET/children/history/:id)
+
+## For debug:
+- [] Set parent balance
+- [] Update snack
