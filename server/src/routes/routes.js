@@ -8,7 +8,7 @@ const routes = express.Router();
 
 routes.get("/images", images.findAll); // Only for debug
 routes.get("/password-groups", passwordGroups.findAll); // Only for debug
-routes.get("/password-groups/:id", passwordGroups.findOne);
+routes.get("/password-groups/random", passwordGroups.getRandom);
 routes.get("/snacks", snacks.findAll); // Only for debug
 routes.get("/snacks/purchase/:snack_id", verifyToken, snacks.purchase);
 
