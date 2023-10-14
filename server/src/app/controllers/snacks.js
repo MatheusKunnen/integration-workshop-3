@@ -1,9 +1,9 @@
-import { Op } from 'sequelize';
 import Snacks from "../models/snacksModel.js";
 import Images from "../models/imagesModel.js";
 import Children from "../models/childrenModel.js";
 import Parents from '../models/parentsModel.js';
 import ChildSnackOrders from "../models/childSnackOrdersModel.js";
+import { getMoneySpentToday } from '../../helpers/getMoneySpentToday.js';
 
 async function findAll(req, res) {
   const snacks = await Snacks.findAll({
@@ -70,25 +70,6 @@ async function purchase(req, res) {
   }
 
   return res.status(500).send("Failed to complete order");
-}
-
-async function getMoneySpentToday(child) {
-  const today = new Date();
-  const startOfDay = new Date(today);
-  startOfDay.setHours(0, 0, 0, 0);  
-
-  const history = await ChildSnackOrders.findAll({
-    where: {
-      childId: child.id,
-      createdAt: {
-        [Op.gte]: startOfDay
-      }
-    },
-    attributes: { exclude: ['id', 'updatedAt', 'childId'] },
-  });
-
-  const historyJson = JSON.parse(JSON.stringify(history));
-  return historyJson.reduce((sum, order) => sum + order.price, 0);
 }
 
 export default { findAll, purchase };

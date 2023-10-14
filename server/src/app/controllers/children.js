@@ -6,6 +6,7 @@ import Images from "../models/imagesModel.js";
 import PasswordGroups from "../models/passwordGroupsModel.js";
 import Snacks from "../models/snacksModel.js";
 import ChildSnackOrders from "../models/childSnackOrdersModel.js";
+import { getMoneySpentToday } from '../../helpers/getMoneySpentToday.js';
 
 async function getByTagNumber(req, res) {
   const tagNumber = req.params.tagNumber;
@@ -37,8 +38,9 @@ async function getByTagNumber(req, res) {
   })
 
   if(child) {
-    const responseChild = updateChildAllowedSnacksArray(child);
-    return res.status(200).json(responseChild);
+    const childWithAllowedSnacks = updateChildAllowedSnacksArray(child);
+    const childWithCredit = await calculateChildCredit(childWithAllowedSnacks);
+    return res.status(200).json(childWithCredit);
   }
   return res.status(400).json("Couldn't find children");
 }
@@ -234,6 +236,23 @@ async function updateChild(req, res) {
     if (childWithSameTagNumber) {
       return res.status(409).send("There's already a child with this tagNumber");
     }
+  }
+
+  // Check if passwordImage is in the password group
+  const passwordGroupFound = await PasswordGroupsRepository.findByPk(child.passwordGroupId);
+  if (!passwordGroupFound) {
+    return res.status(400).send("Couldn't get the child password group");
+  }
+
+  // Check if the specified password is on password group
+  if(passwordGroupFound.image1Id != passwordImageId &&
+      passwordGroupFound.image2Id != passwordImageId &&
+      passwordGroupFound.image3Id != passwordImageId &&
+      passwordGroupFound.image4Id != passwordImageId &&
+      passwordGroupFound.image5Id != passwordImageId &&
+      passwordGroupFound.image6Id != passwordImageId 
+  ) {
+    return res.status(400).send("Image is not in the Password Group or doesn't exist");
   }
 
   child.name = name;
@@ -445,6 +464,14 @@ function updateChildAllowedSnacksArray(child) {
   delete responseChild.AllowedSnacks;
 
   return responseChild;
+}
+
+async function calculateChildCredit(child) {
+  const moneySpent = await getMoneySpentToday(child);
+  child.credit = child.budget - moneySpent;
+  delete child.budget;
+
+  return child;
 }
 
 export default { createChild, loginChild, getByTagNumber, getByParentId, updateChild, deleteChild, updateBudget, updateAllowedSnacks, getOrderHistory };
