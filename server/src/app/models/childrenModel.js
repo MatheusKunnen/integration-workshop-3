@@ -52,26 +52,10 @@ Children.belongsToMany(Snacks, {
   through: 'ChildAllowedSnacks',
   as: 'AllowedSnacks'
 });
+
 Snacks.belongsToMany(Children, {
   through: 'ChildAllowedSnacks',
   as: 'AllowedChildren'
-});
-
-const ChildSnackOrders = db.define('ChildSnackOrders', {
-  Price: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-  }
-});
-
-Children.belongsToMany(Snacks, {
-  through: ChildSnackOrders,
-  as: 'OrderedSnacks'
-});
-
-Snacks.belongsToMany(Children, {
-  through: ChildSnackOrders,
-  as: 'OrderedChildren'
 });
 
 Children.belongsTo(Parents, { foreignKey: 'parentId', as: 'parent' });
