@@ -16,5 +16,5 @@
     - [x] Delete Child (DELETE/children/:id)
 - Budget & Snacks
     - [x] Update Budget (PATCH/children/:id/budget)
-    - [x] Update Allowed Snacks (PATCH/children/snacks)
-- [ ] Get Order History (GET/children/history)
+    - [x] Update Allowed Snacks (PATCH/children/:id/snacks)
+- [x] Get Order History (GET/children/history/:id)

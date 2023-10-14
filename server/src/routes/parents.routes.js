@@ -4,9 +4,8 @@ import verifyToken from '../middlewares/auth.js'
 
 const parentsRoutes = express.Router();
 
-parentsRoutes.get("/", parents.findAll);  // Only for debug
+parentsRoutes.get("/", verifyToken, parents.findParent);
 parentsRoutes.post("/", parents.createParent);
 parentsRoutes.post("/login", parents.loginParent);
-parentsRoutes.get("/:id", verifyToken, parents.findParent);
 
 export default parentsRoutes;

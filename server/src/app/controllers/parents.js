@@ -2,15 +2,9 @@ import ParentsRepository from "../models/parentsModel.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-function findAll(req, res) {
-  return ParentsRepository.findAll().then((result) => res.json(result));
-}
-
 function findParent(req, res) {
-  if(req.user.parent_id != req.params.id){
-    return res.status(401).send("Can't get information of another user");
-  }
-  return ParentsRepository.findByPk(req.params.id).then((result) => res.json(result));
+  const id = req.user.parent_id;
+  return ParentsRepository.findByPk(id).then((result) => res.status(200).json(result));
 }
 
 async function createParent(req, res) {
@@ -63,5 +57,4 @@ async function loginParent(req, res) {
   }
 }
 
-
-export default { findAll, createParent, findParent, loginParent };
+export default { createParent, findParent, loginParent };

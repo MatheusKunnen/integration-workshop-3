@@ -5,6 +5,7 @@ import Parents from "../models/parentsModel.js";
 import Images from "../models/imagesModel.js";
 import PasswordGroups from "../models/passwordGroupsModel.js";
 import Snacks from "../models/snacksModel.js";
+import ChildSnackOrders from "../models/childSnackOrdersModel.js";
 
 async function getByTagNumber(req, res) {
   const tagNumber = req.params.tagNumber;
@@ -417,6 +418,27 @@ async function updateAllowedSnacks(req, res) {
   }
 }
 
+async function getOrderHistory(req, res) {
+  const { id } = req.params;
+
+  const child = await ChildrenRepository.findByPk(id);
+
+  if(!child) {
+    return res.status(404).send("Child not found");
+  }
+
+  if(req.user.parent_id != child.parentId){
+    return res.status(401).send("You can't get the order history of a child that isn't yours");
+  }
+
+  const history = await ChildSnackOrders.findAll({
+    where: {childId: id},
+    attributes: { exclude: ['id', 'updatedAt', 'childId'] },
+  });
+
+  return res.status(200).json(history);
+}
+
 function updateChildAllowedSnacksArray(child) {
   const responseChild = JSON.parse(JSON.stringify(child));
   responseChild.allowedSnacks = responseChild?.AllowedSnacks?.map((snack) => snack.id);
@@ -425,4 +447,4 @@ function updateChildAllowedSnacksArray(child) {
   return responseChild;
 }
 
-export default { createChild, loginChild, getByTagNumber, getByParentId, updateChild, deleteChild, updateBudget, updateAllowedSnacks };
+export default { createChild, loginChild, getByTagNumber, getByParentId, updateChild, deleteChild, updateBudget, updateAllowedSnacks, getOrderHistory };
