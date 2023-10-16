@@ -11,7 +11,7 @@ function CustomButton({ title, onPress, colorScheme}) {
             textColor: Colors.beige,
         },
         purple: {
-            backgroundColor: Colors.purple,
+            backgroundColor: Colors.lightPurple,
             textColor: Colors.darkGray,
         },
         red: {
