@@ -1,18 +1,8 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text, 
-  StyleSheet, 
-  SafeAreaView,
-  StatusBar,
-  Image,
-  Button,
-} from 'react-native';
+import { StyleSheet, SafeAreaView, StatusBar, Image,} from 'react-native';
 import * as Colors from '../utils/colors.js';
 import CustomButton from '../components/CustomButton.jsx';
 import CustomTextInput from '../components/CustomTextInput.jsx';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 function Login ({ navigation }) {
 
@@ -55,7 +45,7 @@ function Login ({ navigation }) {
       <CustomButton 
         title="Create Account" 
         colorScheme="clear"
-        onPress={() => console.log('Sign Up button pressed')}
+        onPress={() => navigation.navigate('ParentRegister')}
       />
       
     </SafeAreaView>
