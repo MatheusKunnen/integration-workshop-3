@@ -6,16 +6,14 @@ function ChildCard({ name, balance = "R$00,00", onPress }) {
   return (
     <View style={styles.card}>
       {name ? (
-        <TouchableOpacity onPress={() => console.log(`${name} Child Card pressed`)}>
+        <TouchableOpacity onPress={onPress}>
             <Text style={styles.nameText}>
                 <Text style={styles.boldText}>{name}</Text> already spent
                 </Text>
 
             <Text style={styles.balanceText}>{`R$${balance}`}</Text>
 
-            
             <View style={styles.iconContainer}>
-                
                 <Image source={require('../assets/right_arrow_icon.png')} style={styles.icon} />
                 <Text style={styles.buttonIndicatorText}>Manage</Text>
             </View>

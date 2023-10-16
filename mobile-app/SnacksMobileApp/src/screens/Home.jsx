@@ -12,24 +12,31 @@ function Home({ route, navigation }) {
     
     return (
         <View style={styles.container}>
-        <View style={styles.topContainer}>
-            <View style={styles.topSection}>
-                <Image source={require('../assets/big_user_icon.png')} style={styles.icon} />
-                <Text style={styles.greeting}>{`Hello, ${username}!`}</Text>
+            <View style={styles.topContainer}>
+                <View style={styles.topSection}>
+                    <Image source={require('../assets/big_user_icon.png')} style={styles.icon} />
+                    <Text style={styles.greeting}>{`Hello, ${username}!`}</Text>
+                </View>
+
+                <ScrollView style={styles.cardSection}>
+                    {children.map((child, index) => (
+                        <ChildCard 
+                            key={index} 
+                            name={child.name} 
+                            balance={child.balance} 
+                            onPress={() => {
+                                navigation.navigate('ManageChildAccount', { childName: child.name });
+                            }}
+                        />
+                    ))}
+                </ScrollView>
             </View>
 
-            <ScrollView style={styles.cardSection}>
-                {children.map((child, index) => (
-                    <ChildCard key={index} name={child.name} balance={child.balance} />
-                ))}
-            </ScrollView>
-        </View>
-
-        <CustomButton
-            title={"Register Child"}
-            colorScheme={"dark"}
-            onPress={() => console.log('Register Child button pressed')}
-        />
+            <CustomButton
+                title={"Register Child"}
+                colorScheme={"dark"}
+                onPress={() => console.log('Register Child button pressed')}
+            />
         </View>
     );
 }
