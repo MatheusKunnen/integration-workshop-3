@@ -57,6 +57,11 @@ async function getByParentId(req, res) {
         as: 'parent',
         attributes: { exclude: ['password', 'balance', 'createdAt', 'updatedAt'] },
       },
+      { 
+        model: Images, 
+        as: 'passwordImage',
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+      },
       {
         model: PasswordGroups,
         as: 'passwordGroup',
