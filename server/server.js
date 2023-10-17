@@ -22,5 +22,5 @@ db.sync()
         console.error('Erro ao sincronizar tabelas:', error);
     });
 
-app.listen(process.env.PORT, () => console.log("Servidor iniciado na porta 3000"));
+app.listen(3000, () => console.log("Servidor iniciado na porta 3000"));
 
