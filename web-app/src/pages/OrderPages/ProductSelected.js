@@ -5,24 +5,17 @@ import { H3, Text, Balance, BalanceText } from "../../styles/styles.js";
 import ImageIcon from "../../assets/icon_full_basket.png";
 import Button from "../../components/Button.js";
 
-const fakeSnack = {
-  id: 1,
-  name: "Snickers",
-  imageid: 1,
-  ingredients: "",
-  price: 4.0,
-  stock: 2,
-};
-
-const fakeBalance = 30.0;
-
 const ProductSelected = () => {
   const location = useLocation();
-  const snack = location && location.state ? location.state : fakeSnack;
+  const { childData, snack } = location.state ? location.state : {};
 
+  // TODO: fix go back button
   return (
     <Wrapper>
-      <Button text={"Go back"} destination={"/product-selection"} />
+      <Button
+        text={"Go back"}
+        destination={{ pathname: "/product-selection", state: childData }}
+      />
       <TextContainer>
         <Icon src={ImageIcon} alt="Icon" />
         <H3>selected product:</H3>
@@ -31,15 +24,19 @@ const ProductSelected = () => {
         <Product>
           <Image key={snack.id} src={"images/snack_image.png"} />
           <Text>{snack.name}</Text>
-          <Text>R${snack.price.toFixed(2)}</Text>
+          <Text>R${(snack.price / 100).toFixed(2)}</Text>
         </Product>
       </ProductContainer>
       <Balance>
         <BalanceText>
-          credit after purchase: R${(fakeBalance - snack.price).toFixed(2)}
+          credit after purchase: R$
+          {(childData.credit - snack.price / 100).toFixed(2)}
         </BalanceText>
       </Balance>
-      <Button text={"confirm"} destination={"/"} />
+      <Button
+        text={"confirm"}
+        destination={{ pathname: "/order-processing", state: snack }}
+      />
     </Wrapper>
   );
 };
@@ -72,10 +69,8 @@ const ProductContainer = styled.div`
   padding: 5px;
 `;
 
-const Product = styled.div`
-`;
+const Product = styled.div``;
 
 const Image = styled.img`
   padding: 20px;
 `;
-

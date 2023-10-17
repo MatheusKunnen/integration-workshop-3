@@ -1,55 +1,28 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import LoginService from '../../services/LoginService';
-import { useNavigate } from "react-router-dom";
-import styled from 'styled-components';
+import React, { useEffect, useState } from "react";
+import LoginService from "../../services/LoginService";
+import { useNavigate, useLocation } from "react-router-dom";
+import styled from "styled-components";
 import { H3 } from "../../styles/styles.js";
-import ImageIcon from '../../assets/icon_image.png';
+import ImageIcon from "../../assets/icon_image.png";
 
-const imageUrls = {
-  'id1': '/images/image_1.png',
-  'id2': '/images/image_2.png',
-  'id3': '/images/image_3.png',
-  'id4': '/images/image_4.png',
-  'id5': '/images/image_5.png',
-  'id6': '/images/image_6.png',
-};
-
-const passwordGroupExample = {
-  'ImageId1': 'id4',
-  'ImageId2': 'id5',
-  'ImageId3': 'id3',
-  'ImageId4': 'id6',
-  'ImageId5': 'id2',
-  'ImageId6': 'id1',
-};
-
-const ImageAuth = (props) => {
-  const childData = props.location && props.location.state ? props.location.state : {};
+const ImageAuth = () => {
+  const location = useLocation();
   const navigate = useNavigate();
-  const [images, setImages] = useState(passwordGroupExample);
+  const childData = location.state ? location.state : {};
+  const { id, ...rest } = childData.passwordGroup;
+  const correctImageId = id;
+  const passwordGroup = rest;
   const [attempt, setAttempt] = useState(0); // zero attempts
   const [displayMessage, setDisplayMessage] = useState(false);
-  const [useService, setUseService] = useState(false);
-
-  const getImages = useCallback(async () => {
-    await LoginService.getPasswordGroup(childData.passwordGroupId)
-      .then((res) => {
-        setImages(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
 
   useEffect(() => {
-    if (useService) {
-      getImages();
-    }
-  }, [useService]);
+    console.log("ImageAuth: ", childData);
+  }, []);
 
-  const handleClick = (id) => {
+  const handleClick = (imageId) => {
     // If it's correct go to product selection page
-    if (id === childData.passwordImageId) {
+    if (imageId === correctImageId) {
+      // TODO: child login authentication
       navigate("/product-selection", { state: childData });
     } else {
       // If it's the first failed attempt increase counter, else return to NFCAuth
@@ -57,10 +30,10 @@ const ImageAuth = (props) => {
         setAttempt(1);
         setDisplayMessage(true);
       } else {
-        navigate("/failed-auth",  {state: "Failed to authenticate!"});
+        navigate("/failed-auth", { state: "Failed to authenticate!" });
       }
     }
-  }
+  };
 
   return (
     <Wrapper>
@@ -69,19 +42,18 @@ const ImageAuth = (props) => {
         <H3>select your image:</H3>
       </TextContainer>
       <ImageContainer>
-        {Object.entries(images).map(([key, value]) => (
-          <div onClick={handleClick()} style={{cursor: 'pointer'}}>
-            <Image key={key} src={imageUrls[value]} />
+        {Object.entries(passwordGroup).map(([key, value]) => (
+          <div
+            key={key}
+            onClick={() => handleClick(value.id)}
+            style={{ cursor: "pointer" }}
+          >
+            <Image key={key} src={value.url} />
           </div>
         ))}
       </ImageContainer>
       <div>
-        {displayMessage ? (
-          <H3>Imagem errada, tente novamente!</H3>
-        ) : (
-          <></>
-        )
-        }
+        {displayMessage ? <H3>Imagem errada, tente novamente!</H3> : <></>}
       </div>
     </Wrapper>
   );
@@ -92,7 +64,7 @@ export default ImageAuth;
 const Wrapper = styled.div`
   background-color: var(--color-primary-light);
   height: 100%;
-  padding: 15% 15%;
+  padding: 20% 15%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -114,6 +86,8 @@ const ImageContainer = styled.div`
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 60px;
   justify-content: center;
+  margin-top: 40px;
+  margin-bottom: 40px;
 `;
 
 const Image = styled.img`

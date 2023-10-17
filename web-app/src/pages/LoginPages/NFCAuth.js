@@ -1,40 +1,42 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import LoginService from '../../services/LoginService';
-import styled from 'styled-components';
-import Logo from '../../assets/logo.png';
-import Icon from '../../assets/icon_tag.png';
-import Button from '../../components/Button';
+import React, { useEffect, useState, useCallback } from "react";
+import LoginService from "../../services/LoginService";
+import styled from "styled-components";
+import Logo from "../../assets/logo.png";
+import Icon from "../../assets/icon_tag.png";
+import Button from "../../components/Button";
 import { useNavigate } from "react-router-dom";
 
 const NFCAuth = () => {
   const navigate = useNavigate();
   const [tagNumber, setTagNumber] = useState("");
-  const [childData, setChildData] = useState({});
 
-  const getChildData = useCallback(async () => {
-    await LoginService.getChildDataByTagNumber(tagNumber)
-    .then((res) => {
-        setChildData(res);
-        navigate("/image-auth", {state: childData});
-    })
-    .catch((err) => {
+  const getChildData = useCallback(async (tag) => {
+    await LoginService.getChildDataByTagNumber(tag)
+      .then((res) => {
+        console.log(res);
+        navigate("/image-auth", { state: res });
+      })
+      .catch((err) => {
         console.log(err);
-        navigate("/failed-auth",  {state: "Child not registered!"});
-    });
+        navigate("/failed-auth", { state: "Child not registered!" });
+      });
   }, []);
 
   useEffect(() => {
-    if(tagNumber !== "") {
-      getChildData();
+    const tag = "123";
+    setTagNumber(tag);
+    console.log(tag);
+    if (tag !== "") {
+      getChildData(tag);
     }
   }, [tagNumber]);
 
   return (
     <View>
-      <img src={Logo} alt="Logo"/>
+      <img src={Logo} alt="Logo" />
       <H1>Hello!</H1>
       <H2>Place your tag on the reader.</H2>
-      <Image src={Icon} alt="Tag icon"/>
+      <Image src={Icon} alt="Tag icon" />
       {/* Temporary buttons to navigate through the pages without using the services*/}
       <H2>Navigate through pages:</H2>
       <Button text={"Image Screen"} destination={"image-auth"} />
@@ -62,14 +64,14 @@ export const View = styled.div`
 
 export const H1 = styled.p`
   text-align: center;
-  font-family: 'Roboto-Black';
+  font-family: "Roboto-Black";
   font-size: 96px;
   color: var(--color-primary-light);
 `;
 
 export const H2 = styled.p`
   text-align: center;
-  font-family: 'Roboto-Black';
+  font-family: "Roboto-Black";
   font-size: 64px;
   color: var(--color-primary-light);
 `;

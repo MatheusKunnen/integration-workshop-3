@@ -24,13 +24,13 @@ export const Wrapper = styled.div`
   background-color: var(--color-secondary-black);
   border-radius: 10px;
   cursor: pointer;
-  margin: 20px;
+  margin: 30px;
 `;
 
 export const Container = styled.div`
   background-color: var(--color-secondary-black);
   border-radius: 10px;
-  padding: 0px 150px;
+  padding: 24px 150px;
 `;
 
 export const Text = styled.p`
