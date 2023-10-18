@@ -3,10 +3,11 @@ import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import * as Colors from '../utils/colors.js';
 import CustomButton from '../components/CustomButton';
 import ChildCard from '../components/ChildCard';
+import { useAuth } from '../AuthContext';
 
-function Home({ route, navigation }) {
+function Home({ navigation }) {
 
-    const { username } = route.params;
+    const { token } = useAuth();
 
     const children = [{name: 'Ana', balance: '10,95'}, {name:'João', balance: '8,75'}];
     
@@ -15,7 +16,7 @@ function Home({ route, navigation }) {
             <View style={styles.topContainer}>
                 <View style={styles.topSection}>
                     <Image source={require('../assets/big_user_icon.png')} style={styles.icon} />
-                    <Text style={styles.greeting}>{`Hello, ${username}!`}</Text>
+                    <Text style={styles.greeting}>{`Hello!`}</Text>
                 </View>
 
                 <ScrollView style={styles.cardSection}>
