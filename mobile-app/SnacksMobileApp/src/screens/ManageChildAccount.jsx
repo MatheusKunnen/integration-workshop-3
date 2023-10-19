@@ -5,11 +5,11 @@ import CustomButton from "../components/CustomButton.jsx";
 import CustomHeader from "../components/CustomHeader.jsx";
 
 function ManageChildAccount({ route,navigation}) {
-    const { childName } = route.params;
+    const { child } = route.params;
     return (
         <View style={{ flex: 1 }}>
             <CustomHeader
-                title={`${childName}'s Account`}
+                title={`${child.name}'s Account`}
                 onPress={() => {
                     navigation.goBack();
                 }}
@@ -26,7 +26,7 @@ function ManageChildAccount({ route,navigation}) {
                 <CustomButton
                     title={"View Account Details"}
                     colorScheme={"purple"}
-                    onPress={() => navigation.navigate('AccountDetails', { name: childName, nfcTag: '1234567890' })}
+                    onPress={() => navigation.navigate('AccountDetails', { child: child })}
                 />
 
                 <CustomButton
