@@ -4,12 +4,31 @@ import * as Colors from '../utils/colors.js';
 import CustomButton from '../components/CustomButton';
 import ChildCard from '../components/ChildCard';
 import { useAuth } from '../AuthContext';
+import { useFocusEffect } from '@react-navigation/native';
+import GetChildrenService from '../services/GetChildrenService';
+import { useState } from 'react';
 
 function Home({ navigation }) {
 
     const { token } = useAuth();
 
-    const children = [{name: 'Ana', balance: '10,95'}, {name:'João', balance: '8,75'}];
+    const [children, setchildren] = useState([]);
+
+    const loadChildren = async () => {
+        await GetChildrenService.getChildren(token).then((response) => {
+            console.log(response);
+            setchildren(response);
+        }).catch((error) => {
+            console.log(error);
+            alert('Failed to load children');
+        });
+    };
+
+    useFocusEffect(
+        React.useCallback(() => {
+            loadChildren();
+        }, [])
+    );
     
     return (
         <View style={styles.container}>
@@ -19,18 +38,25 @@ function Home({ navigation }) {
                     <Text style={styles.greeting}>{`Hello!`}</Text>
                 </View>
 
+                {children.length === 0 ? (
+                  <View style={styles.cardSection}>
+                    <ChildCard /> 
+                  </View>
+                ) : (
                 <ScrollView style={styles.cardSection}>
+                  
                     {children.map((child, index) => (
                         <ChildCard 
                             key={index} 
                             name={child.name} 
-                            balance={child.balance} 
+                            balance={"0,00"} 
                             onPress={() => {
-                                navigation.navigate('ManageChildAccount', { childName: child.name });
+                                navigation.navigate('ManageChildAccount', { child: child });
                             }}
                         />
                     ))}
                 </ScrollView>
+                )}
             </View>
 
             <CustomButton
