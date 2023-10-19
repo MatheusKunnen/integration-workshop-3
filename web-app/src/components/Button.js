@@ -2,9 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-const Button = ({ text, destination }) => {
+const Button = ({ text, destination, onClick }) => {
   const navigate = useNavigate();
   const handleClick = (dest) => {
+    if (onClick) {
+      onClick();
+    }
     navigate(dest);
   };
 

@@ -3,7 +3,6 @@ import LoginService from "../../services/LoginService";
 import styled from "styled-components";
 import Logo from "../../assets/logo.png";
 import Icon from "../../assets/icon_tag.png";
-import Button from "../../components/Button";
 import { useNavigate } from "react-router-dom";
 
 const NFCAuth = () => {
@@ -13,8 +12,10 @@ const NFCAuth = () => {
   const getChildData = useCallback(async (tag) => {
     await LoginService.getChildDataByTagNumber(tag)
       .then((res) => {
-        console.log(res);
-        navigate("/image-auth", { state: res });
+        console.log(res)
+        if(Object.keys(res).length !== 0 && res.constructor === Object){
+          navigate("/image-auth", { state: res });
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -23,11 +24,8 @@ const NFCAuth = () => {
   }, []);
 
   useEffect(() => {
-    const tag = "123";
-    setTagNumber(tag);
-    console.log(tag);
-    if (tag !== "") {
-      getChildData(tag);
+    if (tagNumber !== "") {
+      getChildData(tagNumber);
     }
   }, [tagNumber]);
 
@@ -37,15 +35,16 @@ const NFCAuth = () => {
       <H1>Hello!</H1>
       <H2>Place your tag on the reader.</H2>
       <Image src={Icon} alt="Tag icon" />
-      {/* Temporary buttons to navigate through the pages without using the services*/}
-      <H2>Navigate through pages:</H2>
-      <Button text={"Image Screen"} destination={"image-auth"} />
-      <Button text={"Failed Screen"} destination={"failed-auth"} />
-      <Button text={"Selection Screen"} destination={"product-selection"} />
-      <Button text={"Selected Screen"} destination={"product-selected"} />
-      <Button text={"Order processing"} destination={"order-processing"} />
-      <Button text={"Order finished"} destination={"order-finished"} />
-      <Button text={"Order error"} destination={"order-error"} />
+      {/* Remove button for production */}
+      <button
+        onClick={() => {
+          setTagNumber("123");
+        }}
+        style={{ backgroundColor: "black" }}
+      >
+        <H2>Use NFC tag</H2>
+      </button>
+      <></>
     </View>
   );
 };

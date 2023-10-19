@@ -1,21 +1,26 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { H3, Text, Balance, BalanceText } from "../../styles/styles.js";
 import ImageIcon from "../../assets/icon_full_basket.png";
 import Button from "../../components/Button.js";
+import { useAuth } from "../../hooks/auth.js";
 
 const ProductSelected = () => {
   const location = useLocation();
-  const { childData, snack } = location.state ? location.state : {};
+  const navigate = useNavigate();
+  const { childData } = useAuth();
+  const snack = location.state ? location.state : {};
 
-  // TODO: fix go back button
+  const handleConfirm = () => {
+    navigate("/order-processing", {
+      state: snack,
+    });
+  };
+
   return (
     <Wrapper>
-      <Button
-        text={"Go back"}
-        destination={{ pathname: "/product-selection", state: childData }}
-      />
+      <Button text={"Go back"} destination={"/product-selection"} />
       <TextContainer>
         <Icon src={ImageIcon} alt="Icon" />
         <H3>selected product:</H3>
@@ -33,10 +38,11 @@ const ProductSelected = () => {
           {(childData.credit - snack.price / 100).toFixed(2)}
         </BalanceText>
       </Balance>
-      <Button
-        text={"confirm"}
-        destination={{ pathname: "/order-processing", state: snack }}
-      />
+      <ButtonWrapper onClick={handleConfirm}>
+        <ButtonContainer>
+          <ButtonText>confirm</ButtonText>
+        </ButtonContainer>
+      </ButtonWrapper>
     </Wrapper>
   );
 };
@@ -73,4 +79,26 @@ const Product = styled.div``;
 
 const Image = styled.img`
   padding: 20px;
+`;
+
+const ButtonWrapper = styled.div`
+  background-color: var(--color-secondary-black);
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 30px;
+`;
+
+const ButtonContainer = styled.div`
+  background-color: var(--color-secondary-black);
+  border-radius: 10px;
+  padding: 24px 150px;
+`;
+
+const ButtonText = styled.p`
+  text-align: center;
+  font-family: "Roboto-Bold";
+  font-size: 42px;
+  color: var(--color-secondary-white);
+  line-height: 1;
+  text-transform: uppercase;
 `;

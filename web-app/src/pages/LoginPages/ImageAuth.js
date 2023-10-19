@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
-import LoginService from "../../services/LoginService";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { H3 } from "../../styles/styles.js";
 import ImageIcon from "../../assets/icon_image.png";
+import { useAuth } from "../../hooks/auth.js";
 
 const ImageAuth = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { logIn } = useAuth();
   const childData = location.state ? location.state : {};
   const { id, ...rest } = childData.passwordGroup;
   const correctImageId = id;
@@ -15,17 +16,14 @@ const ImageAuth = () => {
   const [attempt, setAttempt] = useState(0); // zero attempts
   const [displayMessage, setDisplayMessage] = useState(false);
 
-  useEffect(() => {
-    console.log("ImageAuth: ", childData);
-  }, []);
-
   const handleClick = (imageId) => {
-    // If it's correct go to product selection page
     if (imageId === correctImageId) {
-      // TODO: child login authentication
-      navigate("/product-selection", { state: childData });
+      // If the password is correct login child
+      logIn(childData.tagNumber, imageId, childData);
+      // Navigate to the product selection page
+      navigate("/product-selection");
     } else {
-      // If it's the first failed attempt increase counter, else return to NFCAuth
+      // If it's the first failed attempt increase counter, else return to NFCAuth page
       if (attempt < 1) {
         setAttempt(1);
         setDisplayMessage(true);

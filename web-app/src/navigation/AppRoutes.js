@@ -16,12 +16,13 @@ const AppRoutes = () => (
     <Route path="/" element={<NFCAuth />} />
     <Route path="image-auth" element={<ImageAuth />} />
     <Route path="failed-auth" element={<FailedAuth />} />
-    <Route element={<PrivateRoutes />}></Route>
-    <Route path="product-selection" element={<ProductSelection />} />
-    <Route path="product-selected" element={<ProductSelected />} />
-    <Route path="order-processing" element={<OrderProcessing />} />
-    <Route path="order-finished" element={<OrderFinished />} />
-    <Route path="order-error" element={<OrderError />} />
+    <Route element={<PrivateRoutes />}>
+      <Route path="product-selection" element={<ProductSelection />} />
+      <Route path="product-selected" element={<ProductSelected />} />
+      <Route path="order-processing" element={<OrderProcessing />} />
+      <Route path="order-finished" element={<OrderFinished />} />
+      <Route path="order-error" element={<OrderError />} />
+    </Route>
   </Routes>
 );
 

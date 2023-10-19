@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { H3, Text, Balance, BalanceText } from "../../styles/styles.js";
 import ImageIcon from "../../assets/icon_empty_basket.png";
 import Button from "../../components/Button.js";
 import OrderService from "../../services/OrderService.js";
+import { useAuth } from "../../hooks/auth.js";
 
-const ProductSelection = (props) => {
+const ProductSelection = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const childData = location.state ? location.state : {};
+  const { childData, logOut } = useAuth();
   const [childSnacks, setChildSnacks] = useState([]);
-  const credit = childData.credit; // TODO: Check if needs conversion
+  const [credit, setCredit] = useState(0);
 
   const setAllowedSnacks = (snacks) => {
     const filteredSnacks = snacks.filter((snack) =>
@@ -32,18 +32,24 @@ const ProductSelection = (props) => {
 
   useEffect(() => {
     getChildSnacks();
+    setCredit(childData.credit);
   }, []);
 
   const handleClick = (snack) => {
-    console.log(snack);
     navigate("/product-selected", {
-      state: { childData: childData, snack: snack },
+      state: snack,
     });
   };
 
   return (
     <Wrapper>
-      <Button text={"Go back"} destination={"/"} />
+      <Button
+        text={"Go back"}
+        onClick={() => {
+          logOut();
+        }}
+        destination={"/"}
+      />
       <TextContainer>
         <Icon src={ImageIcon} alt="Icon" />
         <H3>select product:</H3>

@@ -3,7 +3,7 @@ import { Outlet, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/auth";
 
 const PrivateRoutes = () => {
-  const { user, token, signOut } = useAuth();
+  const { token, signOut } = useAuth();
 
   const parseJwt = (token) => {
     try {
@@ -13,7 +13,7 @@ const PrivateRoutes = () => {
     }
   };
 
-  if (user) {
+  if (token) {
     const decodedJwt = parseJwt(token);
     if (decodedJwt.exp * 1000 < Date.now()) {
       console.log("User logged out because the token expired");
@@ -21,7 +21,7 @@ const PrivateRoutes = () => {
     }
   }
 
-  return !!user ? <Outlet /> : <Navigate to="/failed-auth" />;
+  return !!token ? <Outlet /> : <Navigate to="/" />;
 };
 
 export default PrivateRoutes;
