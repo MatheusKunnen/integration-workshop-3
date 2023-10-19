@@ -49,7 +49,7 @@ function Login ({ navigation }) {
 
               <CustomTextInput 
                   iconSource={require('../assets/user_icon.png')}
-                  placeholder="Username"
+                  placeholder="E-mail"
                   onChangeText={setUsername}
                   value={username}
               />

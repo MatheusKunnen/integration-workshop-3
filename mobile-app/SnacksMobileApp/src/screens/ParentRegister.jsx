@@ -49,7 +49,7 @@ function ParentRegister( { navigation } ) {
         }).then((response) => {
             console.log(response);
             if (response === null) {
-                alert('Invalid username or password');
+                alert('Invalid e-mail or password');
                 return;
             } else {
                 login({type: 'login', payload: response.token});
@@ -74,7 +74,7 @@ function ParentRegister( { navigation } ) {
             <View style={styles.topSection}>
 
                 <Text style={styles.text}>
-                    Username
+                    E-mail
                 </Text>
                 <CustomTextInput
                     placeholder="Insert Here"
