@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, StatusBar, SafeAreaView } from 'react-native';
 import * as Colors from '../utils/colors.js';
 import CustomButton from '../components/CustomButton';
 import ChildCard from '../components/ChildCard';
@@ -31,6 +31,13 @@ function Home({ navigation }) {
     );
     
     return (
+
+      <SafeAreaView style={{flex:1}}>
+        <StatusBar 
+                  barStyle="dark-content" 
+                  backgroundColor={styles.container.backgroundColor} 
+        />
+
         <View style={styles.container}>
             <View style={styles.topContainer}>
                 <View style={styles.topSection}>
@@ -65,6 +72,7 @@ function Home({ navigation }) {
                 onPress={() => console.log('Register Child button pressed')}
             />
         </View>
+        </SafeAreaView>
     );
 }
 
