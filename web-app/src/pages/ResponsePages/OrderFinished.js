@@ -1,18 +1,19 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 import { H1 } from "../../styles/styles.js";
-import Icon from '../../assets/icon_success.png';
-import Button from '../../components/Button.js'
+import Icon from "../../assets/icon_success.png";
+import Button from "../../components/Button.js";
+import { useAuth } from "../../hooks/auth.js";
 
-const OrderFinished = (props) => {
-const errorMessage = props.location && props.location.state ? props.location.state : "Failed to authenticate!";
+const OrderFinished = () => {
+  const { logOut } = useAuth();
 
   return (
     <View>
       <H1>Purchase successful!</H1>
-      <Image src={Icon} alt="Tag icon"/>
-      <Button text={"purchase again"} destination={"/product-selection"}/>
-      <Button text={"exit"} destination={"/"}/>
+      <Image src={Icon} alt="Tag icon" />
+      <Button text={"purchase again"}  destination={"/product-selection"} />
+      <Button text={"exit"} onClick={() => {logOut();}} destination={"/"} />
     </View>
   );
 };
@@ -30,5 +31,5 @@ export const View = styled.div`
 `;
 
 export const Image = styled.img`
-  margin-bottom: 40px;
+  margin: 40px;
 `;

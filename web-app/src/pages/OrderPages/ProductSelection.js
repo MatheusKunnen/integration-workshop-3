@@ -1,71 +1,73 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import styled from 'styled-components';
+import styled from "styled-components";
 import { H3, Text, Balance, BalanceText } from "../../styles/styles.js";
-import ImageIcon from '../../assets/icon_empty_basket.png';
-import Button from '../../components/Button.js'
+import ImageIcon from "../../assets/icon_empty_basket.png";
+import Button from "../../components/Button.js";
+import OrderService from "../../services/OrderService.js";
+import { useAuth } from "../../hooks/auth.js";
 
-const snacks = [
-    {
-        'id': 1,
-        'name': 'Snickers',
-        'imageid': 1,
-        'ingredients': '',
-        'price': 4.00,
-        'stock': 2,
-    },
-    {
-        'id': 2,
-        'name': 'Snickers',
-        'imageid': 2,
-        'ingredients': '',
-        'price': 5.99,
-        'stock': 10,
-    },
-    {
-        'id': 3,
-        'name': 'Snickers',
-        'imageid': 3,
-        'ingredients': '',
-        'price': 18.00,
-        'stock': 4,
-    },
-]
+const ProductSelection = () => {
+  const navigate = useNavigate();
+  const { childData, logOut } = useAuth();
+  const [childSnacks, setChildSnacks] = useState([]);
+  const [credit, setCredit] = useState(0);
 
-const fakeBalance = 30.00
-
-const ProductSelection = (props) => {
-    
-    const navigate = useNavigate();
-
-    const handleClick = (snack) => {
-        console.log(snack)
-        navigate("/product-selected", {state: snack});
-    }
-
-    return (
-        <Wrapper>
-            <Button text={"Go back"} destination={"/"} />
-            <TextContainer>
-                <Icon src={ImageIcon} alt="Icon" />
-                <H3>select product:</H3>
-            </TextContainer>
-            <ProductContainer>
-                {snacks.map(snack => (
-                    <Product onClick={() => handleClick(snack)}>
-                        <Image key={snack.id} src={"images/snack_image.png"} />
-                        <Text>{snack.name}</Text>
-                        <Text>R${snack.price.toFixed(2)}</Text>
-                    </Product>
-                ))}
-            </ProductContainer>
-            <Balance>
-                <BalanceText>
-                    credit available: R${fakeBalance.toFixed(2)}
-                </BalanceText>
-            </Balance>
-        </Wrapper >
+  const setAllowedSnacks = (snacks) => {
+    const filteredSnacks = snacks.filter((snack) =>
+      childData.allowedSnacks.includes(snack.id)
     );
+    setChildSnacks(filteredSnacks);
+  };
+
+  const getChildSnacks = useCallback(async () => {
+    await OrderService.getSnacks()
+      .then((res) => {
+        setAllowedSnacks(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    getChildSnacks();
+    setCredit(childData.credit);
+  }, []);
+
+  const handleClick = (snack) => {
+    navigate("/product-selected", {
+      state: snack,
+    });
+  };
+
+  return (
+    <Wrapper>
+      <Button
+        text={"Go back"}
+        onClick={() => {
+          logOut();
+        }}
+        destination={"/"}
+      />
+      <TextContainer>
+        <Icon src={ImageIcon} alt="Icon" />
+        <H3>select product:</H3>
+      </TextContainer>
+      <ProductContainer>
+        {childSnacks.map((snack) => (
+          <Product onClick={() => handleClick(snack)}>
+            <Image key={snack.id} src={"images/snack_image.png"} />
+            <Text>{snack.name}</Text>
+            <Text>R${(snack.price / 100).toFixed(2)}</Text>
+          </Product>
+        ))}
+      </ProductContainer>
+      <Balance>
+        <BalanceText>credit available: R${credit.toFixed(2)}</BalanceText>
+      </Balance>
+    </Wrapper>
+  );
 };
 
 export default ProductSelection;
@@ -93,15 +95,16 @@ const Icon = styled.img`
 const ProductContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-gap: 10px;
+  grid-gap: 50px;
   justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
 `;
 
 const Product = styled.div`
-    cursor: pointer;
-    margin: 20px;
+  cursor: pointer;
 `;
 
 const Image = styled.img`
-  padding: 20px;
+  //padding: 20px;
 `;

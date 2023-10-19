@@ -2,9 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-const Button = ({ text, destination }) => {
+const Button = ({ text, destination, onClick }) => {
   const navigate = useNavigate();
   const handleClick = (dest) => {
+    if (onClick) {
+      onClick();
+    }
     navigate(dest);
   };
 
@@ -24,13 +27,13 @@ export const Wrapper = styled.div`
   background-color: var(--color-secondary-black);
   border-radius: 10px;
   cursor: pointer;
-  margin: 20px;
+  margin: 30px;
 `;
 
 export const Container = styled.div`
   background-color: var(--color-secondary-black);
   border-radius: 10px;
-  padding: 0px 150px;
+  padding: 24px 150px;
 `;
 
 export const Text = styled.p`
