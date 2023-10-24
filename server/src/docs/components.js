@@ -13,6 +13,16 @@ export default {
                 description:"An id of an object",
                 example: 1,
             },
+            token:{
+              type:'object',
+              properties:{
+                token:{
+                  type:'string',
+                  description:"A JSON Web Token used for authentication",
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXJlbnRfaWQiOjEsImVtYWlsIjoiZ2gubGlua2VAaG90bWFpbC5jb20iLCJpYXQiOjE2OTczMDQzMDF9.fuZfAZmpc8MiuQF5-0xrXjmVDFbE5vcC0wwqaXA5Gfg",
+                }
+              },
+            },
             Images:{
                 type:'object',
                 properties:{
@@ -95,6 +105,60 @@ export default {
                   description: "Current stock of the snack",
                   example: 50
                 }
+              }
+            },
+            Parents: {
+              type: "object",
+              properties: {
+                id: {
+                  type: "integer",
+                  description: "Parent identification number",
+                  example: 1,
+                },
+                email: {
+                  type: "string",
+                  format: "email",
+                  description: "Parent's email address",
+                  example: "parent@example.com",
+                },
+                password: {
+                  type: "string",
+                  description: "Password of the parent",
+                  example: "password123",
+                },
+                balance: {
+                  type: "integer",
+                  description: "Parent's account balance in cents",
+                  example: 100,
+                },
+                createdAt: {
+                  type: "string",
+                  format: "date-time",
+                  description: "Date and time of creation",
+                  example: "2023-10-24T01:48:46.314Z"
+                },
+                updatedAt: {
+                  type: "string",
+                  format: "date-time",
+                  description: "Date and time of the last update",
+                  example: "2023-10-24T01:48:46.314Z"
+                }
+              }
+            },
+            ParentCredentials: {
+              type: "object",
+              properties: {
+                email: {
+                  type: "string",
+                  format: "email",
+                  description: "Parent's email address",
+                  example: "parent@example.com",
+                },
+                password: {
+                  type: "string",
+                  description: "Password of the parent",
+                  example: "password123",
+                },
               }
             }
         }
