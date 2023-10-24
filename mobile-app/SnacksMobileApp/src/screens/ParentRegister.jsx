@@ -16,13 +16,13 @@ import CustomHeader from '../components/CustomHeader.jsx';
 import RegisterParentService from '../services/RegisterParentService.jsx';
 import LoginService from '../services/LoginService.jsx';
 import {useAuth} from '../AuthContext';
+import TermsAndConditions from './TermsAndConditions.jsx';
 
 function ParentRegister({navigation}) {
   const {login} = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const termsText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget massa id ante feugiat consequat ac id felis. Nulla facilisi. Curabitur euismod ex quis arcu tristique, vel ultrices enim pharetra. Suspendisse in leo nulla. Sed vestibulum lectus nec scelerisque. Aenean a risus quis nisl egestas vulputate. Proin vel erat eu purus consequat congue. Duis cursus congue erat, vel efficitur risus tempus ac. Suspendisse potenti. Donec efficitur nec risus a bibendum. Donec laoreet tincidunt magna, nec accumsan sapien lobortis id.`;
   const [isChecked, setChecked] = React.useState(false);
   const screenHeight = Dimensions.get('window').height;
 
@@ -118,7 +118,7 @@ function ParentRegister({navigation}) {
 
           <View style={[styles.termsContainer, {minHeight: screenHeight / 3}]}>
             <ScrollView>
-              <Text style={styles.termsText}>{termsText}</Text>
+              <TermsAndConditions style={styles.termsText}/>
             </ScrollView>
 
             <TouchableOpacity
@@ -135,6 +135,8 @@ function ParentRegister({navigation}) {
               </Text>
             </TouchableOpacity>
           </View>
+
+          <View style={{margin: screenHeight/24}} />
 
           <View style={styles.bottom}>
             <CustomButton
@@ -175,15 +177,17 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   termsText: {
-    fontSize: 16,
+    flexWrap: 'wrap',
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    margin: 4,
   },
   checkboxLabel: {
     fontSize: 16,
     marginLeft: 10,
+    flexWrap: 'wrap'
   },
   bottom: {
     justifyContent: 'flex-end',
