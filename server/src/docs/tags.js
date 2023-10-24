@@ -12,5 +12,8 @@ export default {
       {
         name: "PasswordGroups", // name of a tag
       },
+      {
+        name: "Auxiliar", // name of a tag
+      },
     ],
   };
