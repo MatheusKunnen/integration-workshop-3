@@ -32,7 +32,7 @@ function ManageChildAccount({ route,navigation}) {
                 <CustomButton
                     title={"Budget & Snacks"} 
                     colorScheme={"purple"}
-                    onPress={() => console.log("Budget & Snacks button pressed")}
+                    onPress={() => navigation.navigate('BudgetAndSnacks', { child: child })}
                 />
                 
                 <CustomButton

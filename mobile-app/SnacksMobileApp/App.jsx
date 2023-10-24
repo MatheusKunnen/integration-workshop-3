@@ -8,6 +8,8 @@ import Home from './src/screens/Home';
 import ParentRegister from './src/screens/ParentRegister';
 import ManageChildAccount from './src/screens/ManageChildAccount';
 import AccountDetails from './src/screens/AccountDetails';
+import RegisterChild from './src/screens/RegisterChild';
+import BudgetAndSnacks from './src/screens/BudgetAndSnacks';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +27,8 @@ function App() {
                     <Stack.Screen name="Home" component={Home} />
                     <Stack.Screen name="ManageChildAccount" component={ManageChildAccount} />
                     <Stack.Screen name="AccountDetails" component={AccountDetails} />
+                    <Stack.Screen name="RegisterChild" component={RegisterChild} />
+                    <Stack.Screen name="BudgetAndSnacks" component={BudgetAndSnacks} />
                 </Stack.Navigator>
             </NavigationContainer>
         </AuthProvider>

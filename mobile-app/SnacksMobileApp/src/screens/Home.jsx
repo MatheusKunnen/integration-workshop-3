@@ -69,7 +69,7 @@ function Home({ navigation }) {
             <CustomButton
                 title={"Register Child"}
                 colorScheme={"dark"}
-                onPress={() => console.log('Register Child button pressed')}
+                onPress={() => navigation.navigate('RegisterChild')}
             />
         </View>
         </SafeAreaView>
