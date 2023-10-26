@@ -24,11 +24,12 @@ export default FailedAuth;
 // Styles
 export const View = styled.div`
   background-color: var(--color-secondary-red);
-  height: 100%;
-  padding: 45% 15%;
+  height: 100vh;
+  padding-horizontal: 10vw;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 `;
 
 export const Image = styled.img`

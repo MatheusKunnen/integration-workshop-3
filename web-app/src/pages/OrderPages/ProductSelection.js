@@ -11,7 +11,7 @@ const ProductSelection = () => {
   const navigate = useNavigate();
   const { childData, logOut } = useAuth();
   const [childSnacks, setChildSnacks] = useState([]);
-  const [credit, setCredit] = useState(0);
+  const credit = childData.credit ? childData.credit : 0;
 
   const setAllowedSnacks = (snacks) => {
     const filteredSnacks = snacks.filter((snack) =>
@@ -32,7 +32,6 @@ const ProductSelection = () => {
 
   useEffect(() => {
     getChildSnacks();
-    setCredit(childData.credit);
   }, []);
 
   const handleClick = (snack) => {
@@ -57,7 +56,7 @@ const ProductSelection = () => {
       <ProductContainer>
         {childSnacks.map((snack) => (
           <Product onClick={() => handleClick(snack)}>
-            <Image key={snack.id} src={"images/snack_image.png"} />
+            <Image key={snack.id} src={snack.image.url} />
             <Text>{snack.name}</Text>
             <Text>R${(snack.price / 100).toFixed(2)}</Text>
           </Product>
@@ -74,11 +73,11 @@ export default ProductSelection;
 
 const Wrapper = styled.div`
   background-color: var(--color-primary-light);
-  height: 100%;
-  padding: 15% 15%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center;  
+  justify-content: center;
 `;
 
 const TextContainer = styled.div`
@@ -95,10 +94,9 @@ const Icon = styled.img`
 const ProductContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-gap: 50px;
+  grid-gap: 15px;
   justify-content: center;
   margin-top: 20px;
-  margin-bottom: 20px;
 `;
 
 const Product = styled.div`
@@ -106,5 +104,5 @@ const Product = styled.div`
 `;
 
 const Image = styled.img`
-  //padding: 20px;
+  max-width: 30vw;
 `;

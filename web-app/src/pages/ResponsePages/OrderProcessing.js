@@ -41,11 +41,12 @@ export default OrderProcessing;
 // Styles
 export const View = styled.div`
   background-color: var(--color-secondary-yellow);
-  height: 100%;
-  padding: 35% 15%;
+  height: 100vh;
+  padding: 0vh 20vw;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 `;
 
 export const Image = styled.img`
