@@ -23,11 +23,12 @@ export default OrderFinished;
 // Styles
 export const View = styled.div`
   background-color: var(--color-secondary-green);
-  height: 100%;
-  padding: 15% 15%;
+  height: 100vh;
+  padding: 0vh 10vw;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 `;
 
 export const Image = styled.img`

@@ -25,7 +25,7 @@ export const H3 = styled.h3`
 export const Text = styled.p`
   text-align: center;
   font-family: "Roboto-Bold";
-  font-size: 40px;
+  font-size: 36px;
   color: var(--color-secondary-black);
   text-transform: uppercase;
   line-height: 1;
@@ -37,14 +37,13 @@ export const Balance = styled.div`
   border: 5px solid var(--color-primary-dark);
   border-radius: 10px;
   margin: 30px;
-  padding: 10px 50px;
-  line-height: 2;
+  padding: 1vh 2vw;
 `;
 
 export const BalanceText = styled.p`
   text-align: center;
   font-family: "Roboto-Bold";
-  font-size: 42px;
+  font-size: 40px;
   color: var(--color-primary-dark);
   text-transform: uppercase;
 `;

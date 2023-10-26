@@ -39,7 +39,7 @@ export const Container = styled.div`
 export const Text = styled.p`
   text-align: center;
   font-family: "Roboto-Bold";
-  font-size: 42px;
+  font-size: 40px;
   color: var(--color-secondary-white);
   line-height: 1;
   text-transform: uppercase;

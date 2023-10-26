@@ -27,7 +27,7 @@ const ProductSelected = () => {
       </TextContainer>
       <ProductContainer>
         <Product>
-          <Image key={snack.id} src={"images/snack_image.png"} />
+          <Image key={snack.id} src={snack.image.url} />
           <Text>{snack.name}</Text>
           <Text>R${(snack.price / 100).toFixed(2)}</Text>
         </Product>
@@ -51,17 +51,19 @@ export default ProductSelected;
 
 const Wrapper = styled.div`
   background-color: var(--color-primary-light);
-  height: 100%;
-  padding: 15% 15%;
+  height: 100vh;
+  padding: 0vh 10vw;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 `;
 
 const TextContainer = styled.div`
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center;  
+  margin-top: 1vh;
 `;
 
 const Icon = styled.img`

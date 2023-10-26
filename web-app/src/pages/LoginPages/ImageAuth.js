@@ -51,7 +51,7 @@ const ImageAuth = () => {
         ))}
       </ImageContainer>
       <div>
-        {displayMessage ? <H3>Imagem errada, tente novamente!</H3> : <></>}
+        {displayMessage ? <WrongImageText>Imagem errada, tente novamente!</WrongImageText> : <div style={{height: '8vh'}}></div>}
       </div>
     </Wrapper>
   );
@@ -61,11 +61,12 @@ export default ImageAuth;
 
 const Wrapper = styled.div`
   background-color: var(--color-primary-light);
-  height: 100%;
-  padding: 20% 15%;
+  height: 100vh;
+  padding-top: 4vw;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 `;
 
 const TextContainer = styled.div`
@@ -90,4 +91,13 @@ const ImageContainer = styled.div`
 
 const Image = styled.img`
   cursor: pointer;
+  max-width: 30vw;
+`;
+
+export const WrongImageText = styled.h3`
+  text-align: center;
+  font-family: "Roboto-Black";
+  font-size: 42px;
+  color: var(--color-secondary-black);
+  text-transform: uppercase;
 `;
