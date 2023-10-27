@@ -28,6 +28,18 @@ services:
         condition: "service_started"
     volumes:
       - .:/usr/src/app
+  seeder:
+    container_name: seeder_container
+    build:
+      context: .
+      dockerfile: Dockerfile.seeder
+      args:
+        CREATE_SEEDS: ${CREATE_SEEDS:-false}
+    depends_on:
+      postgres:
+        condition: "service_started"
+    environment:
+      - CREATE_SEEDS=${CREATE_SEEDS:-false}
       
 volumes:
   postgres_data:
