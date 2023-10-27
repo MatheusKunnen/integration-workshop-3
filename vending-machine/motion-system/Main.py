@@ -1,7 +1,7 @@
 from Configuration import Configuration
 from MotionSystemController import MotionSystemController
-from WebSocketController import WebSocketController
-from NFCReader import NFCReader
+from WebSocketController.WebSocketController import WebSocketController
+from NFCReader.NFCReader import NFCReader
 
 class Main:
 
