@@ -24,7 +24,7 @@ class LoginService {
       return response.data;
     } catch (error) {
       console.log("Failed to login child.", error);
-      return {};
+      throw new Error("Failed to login child.");
     }
   }
 }
