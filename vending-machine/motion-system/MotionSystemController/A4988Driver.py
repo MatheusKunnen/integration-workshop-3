@@ -45,8 +45,8 @@ class A4988Driver:
 if __name__ == '__main__':
     try:
         # Define pins
-        STEP_PIN_V = 22
-        STEP_PIN_H = 4
+        STEP_PIN_V = 4 # inverted V and H
+        STEP_PIN_H = 22
         DIRECTION_PIN = 27
         EN_PIN = 17
         GPIO.setmode(GPIO.BCM)
@@ -56,6 +56,7 @@ if __name__ == '__main__':
         GPIO.setup(STEP_PIN_V, GPIO.OUT)
         GPIO.setup(DIRECTION_PIN, GPIO.OUT)
         GPIO.setup(EN_PIN, GPIO.OUT)
+        GPIO.output(EN_PIN, GPIO.HIGH)
         # Create a new instance of our stepper class (note if you're just starting out with this you're probably better off using a delay of ~0.1)
         stepperHandlerV = A4988Driver(STEP_PIN_V, DIRECTION_PIN, EN_PIN, 0.0005)#0.0005
         stepperHandlerH = A4988Driver(STEP_PIN_H, DIRECTION_PIN, EN_PIN, 0.0005)#0.0005
@@ -70,9 +71,9 @@ if __name__ == '__main__':
             axis = input('axis:')
             steps = int(input("steps:"))
             if axis.lower() == 'v':
-                stepperHandlerV.step(abs(steps), stepperHandlerV.ANTI_CLOCKWISE if steps > 0 else stepperHandlerV.CLOCKWISE)
+                stepperHandlerV.step(abs(steps), stepperHandlerV.ANTI_CLOCKWISE if steps < 0 else stepperHandlerV.CLOCKWISE)
             elif axis.lower() == 'h':
-                stepperHandlerH.step(abs(steps), stepperHandlerH.ANTI_CLOCKWISE if steps > 0 else stepperHandlerH.CLOCKWISE)
+                stepperHandlerH.step(abs(steps), stepperHandlerH.ANTI_CLOCKWISE if steps < 0 else stepperHandlerH.CLOCKWISE)
             print(axis, 'CCW' if steps > 0 else 'CW')
             
 
