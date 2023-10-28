@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import morgan from 'morgan';
 import routes from './src/routes/routes.js';
 import parentsRoutes from './src/routes/parents.routes.js';
 import db from './src/database/database_config.js';
@@ -12,6 +13,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(morgan('short'));
 app.use('/api-docs', swagger.serve, swagger.setup(docs));
 app.use('/image', express.static('images'));
 app.use('/parents', parentsRoutes);
