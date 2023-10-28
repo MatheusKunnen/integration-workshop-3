@@ -1,6 +1,6 @@
 import platform
 
 if platform.machine() in ['aarch', 'armv7l']:
-    from MotionSystemController import MotionSystemController
+    from .MotionSystemController import *
 else:
-    from MotionSystemController.Mock import MotionSystemController
+    from .Mock import *

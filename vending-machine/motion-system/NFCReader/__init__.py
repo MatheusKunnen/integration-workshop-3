@@ -1,1 +1,2 @@
-from NFCReader import NFCReader
+from .NFCReader import *
+from .NFCReaderConfiguration import *

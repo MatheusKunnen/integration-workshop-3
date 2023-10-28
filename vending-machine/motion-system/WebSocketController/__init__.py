@@ -1,1 +1,1 @@
-from WebSocketController import WebSocketController
+from .WebSocketController import *
