@@ -1,3 +1,4 @@
+from NFCReader import NFCReaderConfiguration
 
 class Configuration:
     def __init__(self, config_file):
@@ -6,7 +7,7 @@ class Configuration:
     def get_web_socket_port(self):
         return 5443
     
-    def get_nfc_reader_dev(self):
-        return '/dev/ttyACM0'
+    def get_nfc_reader_config(self):
+        return NFCReaderConfiguration(serial_port='/dev/tty.usbmodem12201')
     
     

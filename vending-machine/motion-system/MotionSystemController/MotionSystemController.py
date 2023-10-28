@@ -1,4 +1,4 @@
-from A4988Driver import A4988Driver
+from .A4988Driver import A4988Driver
 import RPi.GPIO as GPIO
 
 class MotionSystemController:
