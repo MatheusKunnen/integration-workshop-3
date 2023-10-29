@@ -1,79 +1,49 @@
-import RPi.GPIO as GPIO
-import time
+from .StepperDriver import *
+from time import sleep
 
-# depth
-# in1 = 12
-# in2 = 16
-# in3 = 20
-# in4 = 21
+try:
+    import RPi.GPIO as GPIO
+except:
+    import Mock.GPIO as GPIO
 
-#product dispenser
-in1 = 26
-in2 = 19
-in3 = 13
-in4 = 6
+class ULN2009Driver(StepperDriver):
+    __STEP_SEQ = [(1,0,0,1),
+                    (1,0,0,0),
+                    (1,1,0,0),
+                    (0,1,0,0),
+                    (0,1,1,0),
+                    (0,0,1,0),
+                    (0,0,1,1),
+                    (0,0,0,1)]
+    
+    def __init__(self, pins):
+        self.__pins = tuple(pins)
+        self.__current_step = 0
 
-# careful lowering this, at some point you run into the mechanical limitation of how quick your motor can move
-step_sleep = 0.0008
+    def step(self, steps:int, velocity=None):
+        dir = StepperDirection.CW if steps > 0 else StepperDirection.CCW
 
-step_count = 4096*4 # 5.625*(1/64) per step, 4096 steps is 360°
+        if velocity is None:
+            velocity = self._velocity
 
-direction = True # True for clockwise, False for counter-clockwise
+        delay = self.__get_delay(velocity)
 
-# defining stepper motor sequence (found in documentation http://www.4tronix.co.uk/arduino/Stepper-Motors.php)
-step_sequence = [[1,0,0,1],
-                 [1,0,0,0],
-                 [1,1,0,0],
-                 [0,1,0,0],
-                 [0,1,1,0],
-                 [0,0,1,0],
-                 [0,0,1,1],
-                 [0,0,0,1]]
+        steps = abs(steps)
+        for _ in range(steps):
+            GPIO.output(self.__pins, ULN2009Driver[self.__current_step])
+            sleep(delay)
+            self.__next_step(dir)
 
-# setting up
-GPIO.setmode( GPIO.BCM )
-GPIO.setup( in1, GPIO.OUT )
-GPIO.setup( in2, GPIO.OUT )
-GPIO.setup( in3, GPIO.OUT )
-GPIO.setup( in4, GPIO.OUT )
-
-# initializing
-GPIO.output( in1, GPIO.LOW )
-GPIO.output( in2, GPIO.LOW )
-GPIO.output( in3, GPIO.LOW )
-GPIO.output( in4, GPIO.LOW )
-
-motor_pins = [in1,in2,in3,in4]
-motor_step_counter = 0 ;
-
-def cleanup():
-    GPIO.output( in1, GPIO.LOW )
-    GPIO.output( in2, GPIO.LOW )
-    GPIO.output( in3, GPIO.LOW )
-    GPIO.output( in4, GPIO.LOW )
-    GPIO.cleanup()
-
-if __name__ == '__main__':
-    # the meat
-    try:
-        i = 0
+    def __get_delay(self, velocity: StepperVelocity):
+        if velocity == StepperVelocity.NORMAL:
+            return 0.0008 # 800us
+        elif velocity == StepperVelocity.FAST:
+            return 0.0004 # 400us
+        else:
+            return 0.001 # 1000us
         
-        for i in range(step_count):
-            for pin in range(0, len(motor_pins)):
-                GPIO.output( motor_pins[pin], step_sequence[motor_step_counter][pin] )
-            if direction==True:
-                motor_step_counter = (motor_step_counter - 1) % 8
-            elif direction==False:
-                motor_step_counter = (motor_step_counter + 1) % 8
-            else: # defensive programming
-                print( "uh oh... direction should *always* be either True or False" )
-                cleanup()
-                exit( 1 )
-            time.sleep( step_sleep )
-
-    except KeyboardInterrupt:
-        cleanup()
-        exit( 1 )
-
-    cleanup()
-    exit( 0 )
+    def __next_step(self, direction: StepperDirection):
+        if direction==StepperDirection.CW:
+            self.__current_step = (self.__current_step - 1) % len(ULN2009Driver.__STEP_SEQ)
+        else:
+            self.__current_step = (self.__current_step + 1) % len(ULN2009Driver.__STEP_SEQ)
