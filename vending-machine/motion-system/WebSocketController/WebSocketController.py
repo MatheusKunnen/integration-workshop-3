@@ -1,8 +1,8 @@
+import asyncio
+import websockets
 from MotionSystemController import MotionSystemController
 from NFCReader import NFCReader
-import time
-import socket
-import threading
+
 class WebSocketController:
     def __init__(self, ms_controller: MotionSystemController, nfc_reader: NFCReader, port=5443, host='127.0.0.1'):
         self.ms_controller = ms_controller
@@ -15,50 +15,60 @@ class WebSocketController:
     def __setup(self):
         self.nfc_reader.set_callback(self.__on_nfc_code_read)
 
-    # This function will be called when a nfc card is read
     def __on_nfc_code_read(self, nfc_card_code):
         self.nfc_card_code = nfc_card_code
-        print(f'NFC: {nfc_card_code}')
 
-    def handle_request_for_product(self, client_socket):
-        while True:
-            # TODO: Define structure of exchanged messages
-            data = client_socket.recv(1024)
-            if(data):
-                product_id = data.decode()
-                print(f"Message received: {product_id}\n")
-                try:
-                    message = f"Providing product {product_id}"
-                    client_socket.send(message.encode())
-                    self.ms_controller.provide_product(product_id)
-                    message = f"Product provided {product_id}"
-                    client_socket.send(message.encode())
-                except Exception as e:
-                    error_message = f"Error providing product {product_id}: {str(e)}"
-                    client_socket.send(error_message.encode())
-                    print(error_message)
+    async def handle_request_for_product(self, websocket, product_id):
+        try:
+            message = f"Providing product {product_id}"
+            await websocket.send(message)
+            self.ms_controller.provide_product(product_id)
+            message = f"Product provided {product_id}"
+            await websocket.send(message)
+        except Exception as e:
+            error_message = f"Error providing product {product_id}: {str(e)}"
+            await websocket.send(error_message)
+            print(error_message)
 
-    def handle_nfc_card_reading(self, client_socket):
+    async def handle_nfc_card_reading(self, websocket):
+        try:
+            message = f"tagNumber {self.nfc_card_code}"
+            await websocket.send(message)
+            self.nfc_card_code = None
+        except websockets.exceptions.ConnectionClosed:
+            # Handle a closed connection, you can log or handle it as needed
+            print("WebSocket connection closed.")
+        except Exception as e:
+            # Handle other exceptions if necessary
+            print(f"Error sending message: {str(e)}")   
+
+    async def init(self, websocket, path):
         while True:
-            # TODO: Define structure of exchanged messages
-            if self.nfc_card_code:
-                alert_message = f"NFC tag {self.nfc_card_code}\n"
-                client_socket.send(alert_message.encode())
-                self.nfc_card_code = None
-            time.sleep(0.2) # Arbitrary value
+            try:
+                if(self.nfc_card_code):
+                    await self.handle_nfc_card_reading(websocket)
+
+                message = await asyncio.wait_for(websocket.recv(), timeout=0.5)
+                if(message):
+                    parts = message.split(" ")
+                    if(parts[0] == "Provide"):
+                        product_id = parts[1]
+                        await self.handle_request_for_product(websocket, product_id)
+            except asyncio.TimeoutError:
+                pass
+            except websockets.exceptions.ConnectionClosed:
+                print("WebSocket connection closed.")
+                break
+            except Exception as e:
+                print(f"Error: {str(e)}")
 
     def run(self):
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.bind((self.host, self.port))
-        server_socket.listen(1)
-
-        print(f"Server waiting for connections in {self.host}:{self.port}")
-
-        while True:
-            client_socket, addr = server_socket.accept()
-            print(f"Connection established with {addr}")
-
-            handle_request_for_product = threading.Thread(target=self.handle_request_for_product, args=(client_socket,))
-            handle_request_for_product.start()
-            handle_nfc_card_reading = threading.Thread(target=self.handle_nfc_card_reading, args=(client_socket,))
-            handle_nfc_card_reading.start()
+       # Create the WebSocket server
+        start_server = websockets.serve(self.init, self.host, self.port)
+        
+        # Create and run the event loop
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(start_server)
+        
+        # Run the event loop
+        loop.run_forever()
