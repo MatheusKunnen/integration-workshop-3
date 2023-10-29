@@ -1,29 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import * as Colors from '../utils/colors.js';
 import { useFocusEffect } from '@react-navigation/native';
 
-function BudgetControl({ allowedBudget }) {
-    const [budget, setBudget] = useState('0');
-  
+function BudgetControl({ allowedBudget, onBudgetChange }) {  
     const decrement = () => {
-      if (parseInt(budget, 10) > 0) {
-        setBudget(String(parseInt(budget, 10) - 100));
+      if (parseInt(allowedBudget, 10) > 0) {
+        onBudgetChange(String(parseInt(allowedBudget, 10) - 100));
       }
     };
   
     const increment = () => {
-      setBudget(String(parseInt(budget, 10) + 100));
+      onBudgetChange(String(parseInt(allowedBudget, 10) + 100));
     };
-  
+
     useFocusEffect(
       React.useCallback(() => {
-        setBudget(String(allowedBudget));
-      }, [allowedBudget]) // Update budget when allowedBudget changes
+          onBudgetChange(allowedBudget);
+      }, [allowedBudget, onBudgetChange])
     );
   
-    const cents = budget.slice(-2); // Get the last two digits as cents
-    const reais = budget.slice(0, -2) || '0'; // Get the remaining digits as dollars
+    const cents = String(allowedBudget).slice(-2); // Get the last two digits as cents
+    const reais = String(allowedBudget).slice(0, -2) || '0'; // Get the remaining digits as dollars
   
     return (
       <View style={styles.container}>

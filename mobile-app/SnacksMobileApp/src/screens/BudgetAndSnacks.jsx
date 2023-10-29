@@ -8,12 +8,49 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../AuthContext";
 import GetSnacks from "../services/GetSnacks.jsx";
 import BudgetControl from "../components/BudgetControl.jsx";
+import UpdateBudgetService from "../services/UpdateBudgetService.jsx";
+import UpdateSnacksService from "../services/UpdateSnacksService.jsx";
 
 function BudgetAndSnacks({ route,navigation}) {
     const { token } = useAuth();
     const { child } = route.params;
     const [snacks, setSnacks] = useState([]);
-    const [selectedSnacks, setSelectedSnacks] = useState([]);
+    const [selectedSnacks, setSelectedSnacks] = useState(child.allowedSnacks);
+    const [budget, setBudget] = useState(child.budget);
+
+    const handleSave = async () => {
+        console.log(budget);
+        await UpdateBudgetService.execute(token, child.id, {
+            budget: budget,
+        }).then((response) => {
+            console.log(response);
+            if (response === null) {
+                alert('Failed to update budget');
+            } else {
+                UpdateSnacksService.execute(token, child.id, {
+                    allowedSnacks: selectedSnacks,
+                }).then((response) => {
+                    console.log(response);
+                    if (response === null) {
+                        alert('Failed to update snacks');
+                    } else {
+                        alert('Budget and snacks updated successfully');
+                        navigation.navigate('Home');
+                    }
+                }).catch((error) => {
+                    console.log(error);
+                    alert('Failed to update snacks');
+                });
+            }
+        }).catch((error) => {
+            console.log(error);
+            alert('Failed to update budget');
+        });
+    };
+
+    const handleBudgetChange = (newBudget) => {
+        setBudget(newBudget); // Update the budget in the parent component's state
+    };
 
     const getSnacksImageSet = async () => {
         await GetSnacks.execute().then((response) => {
@@ -62,12 +99,10 @@ function BudgetAndSnacks({ route,navigation}) {
                         Allowed Budget
                     </Text>
 
-                    <BudgetControl 
-                        allowedBudget={child.budget}
-                    >  
-
-                    </BudgetControl>
-                    
+                    <BudgetControl
+                        allowedBudget={budget}
+                        onBudgetChange={handleBudgetChange}
+                    />
 
                     <Text style={styles.text}>
                         Allowed Snacks
@@ -102,7 +137,7 @@ function BudgetAndSnacks({ route,navigation}) {
                     <CustomButton
                         title={"Save"}
                         colorScheme={"dark"}
-                        onPress={() => {} }   
+                        onPress={handleSave}   
                     />
                 </View>
 
