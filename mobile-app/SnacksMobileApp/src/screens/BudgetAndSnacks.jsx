@@ -34,7 +34,7 @@ function BudgetAndSnacks({ route,navigation}) {
                     if (response === null) {
                         alert('Failed to update snacks');
                     } else {
-                        alert('Budget and snacks updated successfully');
+                        // alert('Budget and snacks updated successfully');
                         navigation.navigate('Home');
                     }
                 }).catch((error) => {

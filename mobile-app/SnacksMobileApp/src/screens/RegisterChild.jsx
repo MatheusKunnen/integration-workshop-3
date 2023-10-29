@@ -53,7 +53,7 @@ function RegisterChild({navigation}) {
         if (response && typeof response === 'object') {
           console.log(response);
           // alert('Child registered successfully');
-          navigation.navigate('BudgetAndSnacks');
+          navigation.navigate('BudgetAndSnacks', { child: response });
         } else {
           console.error('Response is not in the expected format:', response);
           alert('Failed to register child');
