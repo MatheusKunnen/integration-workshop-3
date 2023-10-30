@@ -7,6 +7,7 @@ except:
     import Mock.GPIO as GPIO
 
 class ULN2009Driver(StepperDriver):
+
     __STEP_SEQ = [(1,0,0,1),
                     (1,0,0,0),
                     (1,1,0,0),
@@ -17,6 +18,7 @@ class ULN2009Driver(StepperDriver):
                     (0,0,0,1)]
     
     def __init__(self, pins):
+        StepperDriver.__init__(self)
         self.__pins = tuple(pins)
         self.__current_step = 0
 
@@ -30,13 +32,13 @@ class ULN2009Driver(StepperDriver):
 
         steps = abs(steps)
         for _ in range(steps):
-            GPIO.output(self.__pins, ULN2009Driver[self.__current_step])
+            GPIO.output(self.__pins, ULN2009Driver.__STEP_SEQ[self.__current_step])
             sleep(delay)
             self.__next_step(dir)
 
     def __get_delay(self, velocity: StepperVelocity):
         if velocity == StepperVelocity.NORMAL:
-            return 0.0008 # 800us
+            return 0.0007 # 700us
         elif velocity == StepperVelocity.FAST:
             return 0.0004 # 400us
         else:

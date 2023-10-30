@@ -10,7 +10,7 @@ class A4988Driver(StepperDriver):
     __STEPS_PER_REVOLUTION = 200
 
     def __init__(self, step_pin, dir_pin):
-        # Configure instance
+        StepperDriver.__init__(self)
         self.__step_pin = step_pin
         self.__dir_pin = dir_pin
 
@@ -31,7 +31,7 @@ class A4988Driver(StepperDriver):
             sleep(delay)
 
     def __set_direction(self, dir: StepperDirection):
-        GPIO.output(self.__dir_pin, 1 if dir ==StepperDirection.CW else 0)
+        GPIO.output(self.__dir_pin, True if dir ==StepperDirection.CW else False)
 
     def __get_delay(self, velocity: StepperVelocity):
         if velocity == StepperVelocity.NORMAL:
