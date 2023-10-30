@@ -71,24 +71,30 @@ class MotionSystemController:
             GPIO.output(self.__config.en_pin, False)
             self.__h_axis.initialize()
             self.__v_axis.initialize()
+        finally:
+            GPIO.output(self.__config.en_pin, True)
+
+    def manual_mode_menu(self):
+        try:
             while True:
                 GPIO.output(self.__config.en_pin, True)
                 print(f"{self.__v_axis.position()} {self.__h_axis.position()}")
                 axis = input('axis:')
                 steps = int(input("steps:"))
-                GPIO.output(self.__config.en_pin, False)
                 if axis.lower() == 'v':
+                    GPIO.output(self.__config.en_pin, False)
                     self.__v_axis.move(steps)
                 elif axis.lower() == 'h':
+                    GPIO.output(self.__config.en_pin, False)
                     self.__h_axis.move(steps)
                 elif axis.lower() == 'd':
                     self.__depth_motor.step(steps)
                 elif axis.lower() == 'p':
                     self.__pd_motor.step(steps)
-                elif 
+                elif axis.lower() == 'e':
+                    break
         finally:
             GPIO.output(self.__config.en_pin, True)
-
 
     def __initialize_gpio(self):
         GPIO.setmode(GPIO.BCM)
