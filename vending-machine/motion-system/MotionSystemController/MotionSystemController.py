@@ -1,114 +1,105 @@
+from .MotionSystemConfiguration import MotionSystemConfiguration
+from .Axis import Axis
 from .A4988Driver import A4988Driver
-import RPi.GPIO as GPIO
+from .ULN2009Driver import ULN2009Driver
+from .StepperDriver import *
+from .LimiterSwitch import LimiterSwitch
+from .ReflectanceSensor import ReflectanceSensor
+from .ProductDispenser import ProductDispenser
 
+try:
+    import RPi.GPIO as GPIO
+except:
+    import Mock.GPIO as GPIO
+    
 class MotionSystemController:
-    def __init__(self):
-        pass
+
+    __DEFAULT_PRODUCTS = [
+        {"id": 1, "v_pos": 450, "h_pos": 450, "depth":4096*16, "turns":4096*5},
+        {"id": 2, "v_pos": 450, "h_pos": 2900, "depth":4096*16, "turns":4096*5},
+        {"id": 3, "v_pos": 450, "h_pos": 5300, "depth":4096*16, "turns":4096*5},
+        {"id": 4, "v_pos": 4850, "h_pos": 450, "depth":4096*16, "turns":4096*5},
+        {"id": 5, "v_pos": 4850, "h_pos": 2900, "depth":4096*16, "turns":4096*5},
+        {"id": 6, "v_pos": 4850, "h_pos": 5250, "depth":4096*16, "turns":4096*5},
+    ]
+
+    def __init__(self, config: MotionSystemConfiguration):
+        self.__products = MotionSystemController.__DEFAULT_PRODUCTS
+        self.__config = config
+
+        self.__initialize_gpio()
+
+        self.__h_motor: StepperDriver = A4988Driver(config.step_pin_h, config.dir_pin)
+        self.__v_motor: StepperDriver = A4988Driver(config.step_pin_v, config.dir_pin)
+
+        self.__pd_motor: StepperDriver = ULN2009Driver(config.pd_motor_pins)
+        self.__depth_motor: StepperDriver = ULN2009Driver(config.depth_motor_pins)
+
+        self.__limiter_sw: LimiterSwitch = LimiterSwitch(config.limiter_pin)
+        self.__h_sensor: ReflectanceSensor = ReflectanceSensor(config.sensor_pin_h, 'Horizontal')
+        self.__v_sensor: ReflectanceSensor = ReflectanceSensor(config.sensor_pin_v, 'Vertical')
+
+        self.__h_axis: Axis = Axis('Horizontal', self.__h_motor, self.__limiter_sw, self.__h_sensor)
+        self.__v_axis: Axis = Axis('Vertical', self.__v_motor, self.__limiter_sw, self.__v_sensor)
+        self.__product_dispenser = ProductDispenser(self.__pd_motor, self.__depth_motor, self.__limiter_sw)
+        self.__depth_motor.step(10)
+        self.__initialize()
+
 
     def provide_product(self, product_id:int):
-        pass
+        v_pos, h_pos, depth, turns = self.__get_product_position(product_id)
 
-print('here')
-GPIO.setmode(GPIO.BCM)
+        print(f"Providing product {v_pos}, {h_pos}, {depth}, {turns}")
 
-if __name__ == '__main__':
-    try:
-        # Define pins
-        STEP_PIN_V = 4
-        STEP_PIN_H = 22
-        DIRECTION_PIN = 27
-        EN_PIN = 17
-        LIMIT_BTN_GPIO = 24
+        self.__v_axis.move_to_position(v_pos)
+        self.__h_axis.move_to_position(h_pos)
 
+        self.__product_dispenser.provide_product(depth, turns)
+
+        self.__h_axis.move_to_position(0)
+        self.__v_axis.move_to_position(0)
+
+    def __get_product_position(self, product_id: int):
+        for product in self.__products:
+            if product['id'] == product_id:
+                return product["v_pos"], product["h_pos"], product["depth"], product["turns"]
+        raise KeyError(f'Invalid product id {product_id}')
+        
+
+    def __initialize(self):
+        try:
+            GPIO.output(self.__config.en_pin, False)
+            self.__h_axis.initialize()
+            self.__v_axis.initialize()
+            while True:
+                GPIO.output(self.__config.en_pin, True)
+                print(f"{self.__v_axis.position()} {self.__h_axis.position()}")
+                axis = input('axis:')
+                steps = int(input("steps:"))
+                GPIO.output(self.__config.en_pin, False)
+                if axis.lower() == 'v':
+                    self.__v_axis.move(steps)
+                elif axis.lower() == 'h':
+                    self.__h_axis.move(steps)
+                elif axis.lower() == 'd':
+                    self.__depth_motor.step(steps)
+                elif axis.lower() == 'p':
+                    self.__pd_motor.step(steps)
+                elif 
+        finally:
+            GPIO.output(self.__config.en_pin, True)
+
+
+    def __initialize_gpio(self):
         GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        # Setup gpio pins
-        GPIO.setup(STEP_PIN_H, GPIO.OUT)
-        GPIO.setup(STEP_PIN_V, GPIO.OUT)
-        GPIO.setup(DIRECTION_PIN, GPIO.OUT)
-        GPIO.setup(EN_PIN, GPIO.OUT)
-        
-        GPIO.setup(LIMIT_BTN_GPIO, GPIO.IN)
 
-        GPIO.output(EN_PIN, GPIO.HIGH)
+        for pin in self.__config.default_high_pins():
+            GPIO.setup(pin, GPIO.OUT)
+            GPIO.output(pin, True)
 
-        stepperHandlerV = A4988Driver(STEP_PIN_V, DIRECTION_PIN, EN_PIN, 0.0005)#0.0005
-        stepperHandlerH = A4988Driver(STEP_PIN_H, DIRECTION_PIN, EN_PIN, 0.0005)#0.0005
+        for pin in self.__config.default_low_pins():
+            GPIO.setup(pin, GPIO.OUT)
+            GPIO.output(pin, False)
 
-        V_MAX_STEPS = -1
-        H_MAX_STEPS = -1
-
-        if GPIO.input(LIMIT_BTN_GPIO):
-            raise Exception('Limit switch already pressed')
-        
-        STEPS_PER_MM = 25
-        D_STEP = 25 # 1mm
-        SAFE_STEPS = 125 # 4mm
-
-        steps_up = 0
-        while not GPIO.input(LIMIT_BTN_GPIO):
-            stepperHandlerV.step(D_STEP, stepperHandlerV.CLOCKWISE) # Moves up
-            steps_up += D_STEP
-
-        print(f'Top found after {steps_up} steps ({steps_up/STEPS_PER_MM}mm)')
-        stepperHandlerV.step(SAFE_STEPS, stepperHandlerV.ANTI_CLOCKWISE) # Moves down
-        
-        if GPIO.input(LIMIT_BTN_GPIO):
-            raise Exception('Vertical axis jammed :(')
-        
-        steps_down = 0
-        while not GPIO.input(LIMIT_BTN_GPIO):
-            stepperHandlerV.step(D_STEP, stepperHandlerV.ANTI_CLOCKWISE) # Moves down
-            steps_down += D_STEP
-
-        print(f'Bottom found after {steps_down} steps ({steps_down/STEPS_PER_MM}mm)')
-        stepperHandlerV.step(SAFE_STEPS, stepperHandlerV.CLOCKWISE) # Moves up
-
-        if GPIO.input(LIMIT_BTN_GPIO):
-            raise Exception('Vertical axis jammed :(')
-        VERTICAL_MAX_STEPS = steps_down - SAFE_STEPS
-        print(f'Vertical axis limit 0-{VERTICAL_MAX_STEPS} steps | {VERTICAL_MAX_STEPS/STEPS_PER_MM}')
-
-        # Horizontal axis
-        steps_right = 0
-        while not GPIO.input(LIMIT_BTN_GPIO):
-            stepperHandlerH.step(D_STEP, stepperHandlerH.CLOCKWISE) # Moves rigth
-            steps_right += D_STEP
-
-        print(f'Right found after {steps_right} steps ({steps_right/STEPS_PER_MM}mm)')
-        stepperHandlerH.step(SAFE_STEPS, stepperHandlerH.ANTI_CLOCKWISE) # Moves left
-        
-        if GPIO.input(LIMIT_BTN_GPIO):
-            raise Exception('Horizontal axis jammed :(')
-        
-        steps_left = 0
-        while not GPIO.input(LIMIT_BTN_GPIO):
-            stepperHandlerH.step(D_STEP, stepperHandlerH.ANTI_CLOCKWISE) # Moves left
-            steps_left += D_STEP
-
-        print(f'Left found after {steps_left} steps ({steps_left/STEPS_PER_MM}mm)')
-        stepperHandlerH.step(SAFE_STEPS, stepperHandlerH.CLOCKWISE) # Moves right
-
-        if GPIO.input(LIMIT_BTN_GPIO):
-            raise Exception('Horizontal axis jammed :(')
-        HORIZONTAL_MAX_STEPS = steps_left - SAFE_STEPS
-
-        print(f'Vertical axis limit 0-{VERTICAL_MAX_STEPS} steps | {VERTICAL_MAX_STEPS/STEPS_PER_MM}')
-        print(f'Horizontal axis limit 0-{HORIZONTAL_MAX_STEPS} steps | {HORIZONTAL_MAX_STEPS/STEPS_PER_MM}')
-
-        stepperHandlerV.step(VERTICAL_MAX_STEPS, stepperHandlerV.CLOCKWISE) # Moves up
-        stepperHandlerH.step(HORIZONTAL_MAX_STEPS, stepperHandlerH.CLOCKWISE) # Moves right
-        stepperHandlerV.step(VERTICAL_MAX_STEPS, stepperHandlerV.ANTI_CLOCKWISE) # Moves down
-        stepperHandlerH.step(HORIZONTAL_MAX_STEPS, stepperHandlerH.ANTI_CLOCKWISE) # Moves left
-
-        while True:
-            axis = input('axis:')
-            steps = int(input("steps:"))
-            if axis.lower() == 'v':
-                stepperHandlerV.step(abs(steps), stepperHandlerV.ANTI_CLOCKWISE if steps < 0 else stepperHandlerV.CLOCKWISE)
-            elif axis.lower() == 'h':
-                stepperHandlerH.step(abs(steps), stepperHandlerH.ANTI_CLOCKWISE if steps < 0 else stepperHandlerH.CLOCKWISE)
-            print(axis, 'CCW' if steps > 0 else 'CW')
-
-    finally:
-        GPIO.cleanup()
+        for pin in self.__config.input_pins():
+            GPIO.setup(pin, GPIO.IN)
