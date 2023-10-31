@@ -11,16 +11,14 @@ const ImageAuth = () => {
   const { logIn } = useAuth();
   const childData = location.state ? location.state : {};
   const { id, ...rest } = childData.passwordGroup;
-  const correctImageId = id;
   const passwordGroup = rest;
   const [attempt, setAttempt] = useState(0); // zero attempts
   const [displayMessage, setDisplayMessage] = useState(false);
 
-  const handleClick = (imageId) => {
-    if (imageId === correctImageId) {
-      // If the password is correct login child
-      logIn(childData.tagNumber, imageId, childData);
-      // Navigate to the product selection page
+  const handleClick = async (imageId) => {
+    const loginStatus = await logIn(childData.tagNumber, imageId, childData);
+    if (loginStatus === "success") {
+      // If the password is correct navigate to the product selection page
       navigate("/product-selection");
     } else {
       // If it's the first failed attempt increase counter, else return to NFCAuth page
@@ -51,7 +49,7 @@ const ImageAuth = () => {
         ))}
       </ImageContainer>
       <div>
-        {displayMessage ? <WrongImageText>Imagem errada, tente novamente!</WrongImageText> : <div style={{height: '8vh'}}></div>}
+        {displayMessage ? <WrongImageText>Wrong image, try again!</WrongImageText> : <div style={{height: '4vh'}}></div>}
       </div>
     </Wrapper>
   );

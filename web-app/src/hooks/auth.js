@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useState, useContext, useEffect } from "react";
 
 import api from "../services/api";
+import LoginService from "../services/LoginService";
 
 const AuthContext = createContext({});
 
@@ -19,21 +20,26 @@ const AuthProvider = ({ children }) => {
   }, [token]);
 
   const logIn = useCallback(async (tagNumber, passwordImageId, childData) => {
-    const response = await api.post("/children/login", {
-      "tagNumber": tagNumber,
-      "passwordImageId": passwordImageId,
-    });
+    try{
+        const response = await LoginService.loginChild({
+          "tagNumber": tagNumber,
+          "passwordImageId": passwordImageId,
+        });
+        
+        const { token } = response;
 
-    const { token } = response.data;
+        localStorage.setItem("token", token);
+        localStorage.setItem("childData", JSON.stringify(childData));
 
-    localStorage.setItem("token", token);
-    localStorage.setItem("childData", JSON.stringify(childData));
+        api.defaults.headers["Authorization"] = `Bearer ${token}`;
 
-    api.defaults.headers["Authorization"] = `Bearer ${token}`;
+        setToken(token);
+        setChildData(childData);
 
-    setToken(token);
-    setChildData(childData);
-    return;
+        return "success";
+      } catch (error) {
+        return "fail";
+      }
   }, []);
 
   const logOut = useCallback(() => {
