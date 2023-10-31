@@ -38,11 +38,11 @@ class ULN2009Driver(StepperDriver):
 
     def __get_delay(self, velocity: StepperVelocity):
         if velocity == StepperVelocity.NORMAL:
-            return 0.0007 # 700us
+            return 0.00120 # 1000us
         elif velocity == StepperVelocity.FAST:
-            return 0.0004 # 400us
+            return 0.00100 #  750us
         else:
-            return 0.001 # 1000us
+            return 0.00150 # 1500us
         
     def __next_step(self, direction: StepperDirection):
         if direction==StepperDirection.CW:
