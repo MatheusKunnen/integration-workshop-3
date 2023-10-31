@@ -1,14 +1,15 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useCallback } from "react";
 import LoginService from "../../services/LoginService";
 import styled from "styled-components";
 import Logo from "../../assets/logo.png";
 import Icon from "../../assets/icon_tag.png";
 import { useNavigate } from "react-router-dom";
+import { useWebsocketCommunication } from "../../hooks/websocket";
 
 const NFCAuth = () => {
   const navigate = useNavigate();
-  const [tagNumber, setTagNumber] = useState("");
-
+  const { tagNumber, setTagNumber } = useWebsocketCommunication();
+ 
   const getChildData = useCallback(async (tag) => {
     await LoginService.getChildDataByTagNumber(tag)
       .then((res) => {
@@ -21,13 +22,13 @@ const NFCAuth = () => {
         console.log(err);
         navigate("/failed-auth", { state: "Child not registered!" });
       });
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (tagNumber !== "") {
       getChildData(tagNumber);
     }
-  }, [tagNumber]);
+  }, [tagNumber, getChildData]);
 
   return (
     <View>
