@@ -15,12 +15,12 @@ except:
 class MotionSystemController:
 
     __DEFAULT_PRODUCTS = [
-        {"id": 1, "v_pos": 450, "h_pos": 450, "depth":4096*16, "turns":4096*5},
-        {"id": 2, "v_pos": 450, "h_pos": 2900, "depth":4096*16, "turns":4096*5},
-        {"id": 3, "v_pos": 450, "h_pos": 5300, "depth":4096*16, "turns":4096*5},
-        {"id": 4, "v_pos": 4850, "h_pos": 450, "depth":4096*16, "turns":4096*5},
-        {"id": 5, "v_pos": 4850, "h_pos": 2900, "depth":4096*16, "turns":4096*5},
-        {"id": 6, "v_pos": 4850, "h_pos": 5250, "depth":4096*16, "turns":4096*5},
+        {"id": 1, "v_pos": 450, "h_pos": 450, "depth":4096*6, "turns":4096},
+        {"id": 2, "v_pos": 450, "h_pos": 2900, "depth":4096*6, "turns":4096},
+        {"id": 3, "v_pos": 450, "h_pos": 5300, "depth":4096*6, "turns":4096},
+        {"id": 4, "v_pos": 4850, "h_pos": 450, "depth":4096*6, "turns":4096},
+        {"id": 5, "v_pos": 4850, "h_pos": 2900, "depth":4096*6, "turns":4096},
+        {"id": 6, "v_pos": 4850, "h_pos": 5250, "depth":4096*6, "turns":4096},
     ]
 
     def __init__(self, config: MotionSystemConfiguration):
