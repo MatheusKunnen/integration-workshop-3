@@ -42,7 +42,7 @@ class MotionSystemController:
         self.__h_axis: Axis = Axis('Horizontal', self.__h_motor, self.__limiter_sw, self.__h_sensor)
         self.__v_axis: Axis = Axis('Vertical', self.__v_motor, self.__limiter_sw, self.__v_sensor)
         self.__product_dispenser = ProductDispenser(self.__pd_motor, self.__depth_motor, self.__limiter_sw)
-        self.__depth_motor.step(10)
+
         self.__initialize()
 
 
@@ -50,14 +50,21 @@ class MotionSystemController:
         v_pos, h_pos, depth, turns = self.__get_product_position(product_id)
 
         print(f"Providing product {v_pos}, {h_pos}, {depth}, {turns}")
+        try:
+            self.__enable_axes()
 
-        self.__v_axis.move_to_position(v_pos)
-        self.__h_axis.move_to_position(h_pos)
+            self.__v_axis.move_to_position(v_pos)
+            self.__h_axis.move_to_position(h_pos)
+            self.__disable_axes()
+            
+            self.__product_dispenser.provide_product(depth, turns)
 
-        self.__product_dispenser.provide_product(depth, turns)
+            self.__enable_axes()
+            self.__h_axis.move_to_position(0)
+            self.__v_axis.move_to_position(0)
+        finally:
+            self.__disable_axes()
 
-        self.__h_axis.move_to_position(0)
-        self.__v_axis.move_to_position(0)
 
     def __get_product_position(self, product_id: int):
         for product in self.__products:
@@ -68,33 +75,38 @@ class MotionSystemController:
 
     def __initialize(self):
         try:
-            GPIO.output(self.__config.en_pin, False)
+            self.__disable_axes()
+            self.__product_dispenser.initialize()
+            self.__enable_axes()
             self.__h_axis.initialize()
             self.__v_axis.initialize()
+            self.manual_mode_menu()
         finally:
-            GPIO.output(self.__config.en_pin, True)
+            self.__disable_axes()
 
     def manual_mode_menu(self):
         try:
             while True:
-                GPIO.output(self.__config.en_pin, True)
+                self.__disable_axes()
                 print(f"{self.__v_axis.position()} {self.__h_axis.position()}")
                 axis = input('axis:')
                 steps = int(input("steps:"))
                 if axis.lower() == 'v':
-                    GPIO.output(self.__config.en_pin, False)
+                    self.__enable_axes()
                     self.__v_axis.move(steps)
                 elif axis.lower() == 'h':
-                    GPIO.output(self.__config.en_pin, False)
+                    self.__enable_axes()
                     self.__h_axis.move(steps)
                 elif axis.lower() == 'd':
                     self.__depth_motor.step(steps)
                 elif axis.lower() == 'p':
                     self.__pd_motor.step(steps)
+                elif axis.lower() == 'pp':
+                    self.provide_product(steps)
                 elif axis.lower() == 'e':
                     break
         finally:
-            GPIO.output(self.__config.en_pin, True)
+            self.__disable_axes()
 
     def __initialize_gpio(self):
         GPIO.setmode(GPIO.BCM)
@@ -109,3 +121,10 @@ class MotionSystemController:
 
         for pin in self.__config.input_pins():
             GPIO.setup(pin, GPIO.IN)
+
+    def __enable_axes(self):
+        GPIO.output(self.__config.en_pin, False)
+    
+    def __disable_axes(self):
+        GPIO.output(self.__config.en_pin, True)
+        
