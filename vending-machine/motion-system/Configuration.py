@@ -8,6 +8,6 @@ class Configuration:
         return 5443
     
     def get_nfc_reader_config(self):
-        return NFCReaderConfiguration(serial_port='/dev/tty.usbmodem12201')
+        return NFCReaderConfiguration(serial_port='/dev/ttyACM0')
     
     

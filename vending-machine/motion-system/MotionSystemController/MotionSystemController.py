@@ -80,7 +80,7 @@ class MotionSystemController:
             self.__enable_axes()
             self.__h_axis.initialize()
             self.__v_axis.initialize()
-            self.manual_mode_menu()
+            # self.manual_mode_menu()
         finally:
             self.__disable_axes()
 
