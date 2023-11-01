@@ -11,7 +11,7 @@ class ReflectanceSensor:
         self.__name = name
         self.__observers = []
         self.__status: bool = False
-        self.__setup()
+        # self.__setup()
 
     def __setup(self):
         GPIO.add_event_detect(self.__pin, GPIO.BOTH, 
@@ -32,7 +32,7 @@ class ReflectanceSensor:
             observer(self.__status)
 
     def is_on(self):
-        return self.__status
+        return GPIO.input(self.__pin) #self.__status
     
     def add_observer(self, observer):
         self.__observers.append(observer) 
