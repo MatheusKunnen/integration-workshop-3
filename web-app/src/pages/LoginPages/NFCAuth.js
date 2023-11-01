@@ -1,33 +1,48 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useCallback } from "react";
 import LoginService from "../../services/LoginService";
 import styled from "styled-components";
 import Logo from "../../assets/logo.png";
 import Icon from "../../assets/icon_tag.png";
 import { useNavigate } from "react-router-dom";
+import { useWebsocketCommunication } from "../../hooks/websocket";
 
 const NFCAuth = () => {
   const navigate = useNavigate();
-  const [tagNumber, setTagNumber] = useState("");
+  const { tagNumber, setTagNumber, setWaitingForTag } =
+    useWebsocketCommunication();
 
-  const getChildData = useCallback(async (tag) => {
-    await LoginService.getChildDataByTagNumber(tag)
-      .then((res) => {
-        console.log(res)
-        if(Object.keys(res).length !== 0 && res.constructor === Object){
-          navigate("/image-auth", { state: res });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        navigate("/failed-auth", { state: "Child not registered!" });
-      });
-  }, []);
+  const getChildData = useCallback(
+    async (tag) => {
+      await LoginService.getChildDataByTagNumber(tag)
+        .then((res) => {
+          console.log(res);
+          if (Object.keys(res).length !== 0 && res.constructor === Object) {
+            navigate("/image-auth", { state: res });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          navigate("/failed-auth", { state: "Child not registered!" });
+        });
+    },
+    [navigate]
+  );
+
+  useEffect(() => {
+    console.log("Waiting for tag");
+    setWaitingForTag(true);
+    return () => {
+      console.log("Not waiting for tag");
+      setWaitingForTag(false);
+    };
+  }, [setWaitingForTag]);
 
   useEffect(() => {
     if (tagNumber !== "") {
       getChildData(tagNumber);
+      setTagNumber("");
     }
-  }, [tagNumber]);
+  }, [tagNumber, getChildData, setTagNumber]);
 
   return (
     <View>
