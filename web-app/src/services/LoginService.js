@@ -1,9 +1,6 @@
 import api from "./api";
 
 class LoginService {
-  // Get NFC tag number from sensor
-  // Related task: "Implement communication with NFC reader"
-
   // Get Child data by tagNumber
   async getChildDataByTagNumber(tagNumber) {
     try {
