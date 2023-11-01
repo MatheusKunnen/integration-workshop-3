@@ -29,7 +29,7 @@ function OrderHistory ({route, navigation}) {
     };
 
     const getOrderHistory = async () => {
-        await OrderHistoryService.execute(child.id, token).then((response) => {
+        await OrderHistoryService.getHistory(child.id, token).then((response) => {
             console.log(response);
             if (response === null) {
                 alert('Failed to get order history');

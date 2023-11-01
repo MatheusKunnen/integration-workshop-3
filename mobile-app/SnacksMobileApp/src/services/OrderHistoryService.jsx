@@ -1,7 +1,7 @@
 import api from "./api";
 
 class OrderHistoryService {
-    async execute(id, parentToken) {
+    async getHistory(id, parentToken) {
         api.defaults.headers.common['Authorization'] = `Bearer ${parentToken}`;
         try {
             const response = await api.get(`/children/history/${id}`);
@@ -10,6 +10,15 @@ class OrderHistoryService {
             console.log("Failed to get order history: " + error);
             return null;
         }
+    }
+
+    async getTotalSpent(id, parentToken) {
+        const history = await this.getHistory(id, parentToken);
+        let total = 0;
+        history.forEach((item) => {
+            total += item.price;
+        });
+        return total;
     }
 }
 
