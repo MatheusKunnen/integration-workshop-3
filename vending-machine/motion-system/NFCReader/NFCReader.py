@@ -1,5 +1,5 @@
 from serial import Serial
-from threading import Thread
+from multiprocessing import Process, Queue
 
 from .NFCReaderConfiguration import *
 
@@ -11,6 +11,8 @@ class NFCReader:
         self.__serial = None
         self.__callback = None
         self.__thread = None
+        self.queue = Queue()
+        self.__last_readed = None
         self.__setup()
 
     def __setup(self):
@@ -24,7 +26,7 @@ class NFCReader:
         if self.__thread is not None:
             raise RuntimeError('NFCReader thread already started')
         
-        self.__thread = Thread(target=self.__run, name='NFC Reader Thread', daemon=True)
+        self.__thread = Process(target=self.__run, name='NFC Reader Thread', daemon=True)
         
         if self.__serial is not None:
             self.__thread.start()
@@ -38,7 +40,11 @@ class NFCReader:
 
                 if NFCReader.__DEBUG:
                     print(f'NFC: {nfc_code}')
+
+                if self.queue.empty() or nfc_code != self.__last_readed:
+                    self.__last_readed = nfc_code
+                    self.queue.put_nowait(nfc_code)
                 
-                self.__callback(nfc_code)
+                # self.__callback(nfc_code)
         except Exception as e:
             print(e)

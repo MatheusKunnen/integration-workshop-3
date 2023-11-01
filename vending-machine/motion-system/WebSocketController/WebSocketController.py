@@ -20,6 +20,7 @@ class WebSocketController:
 
     async def handle_request_for_product(self, websocket, product_id):
         try:
+            product_id = int(str(product_id).lstrip())
             message = f"Providing product {product_id}"
             await websocket.send(message)
             self.ms_controller.provide_product(product_id)
@@ -45,10 +46,13 @@ class WebSocketController:
     async def init(self, websocket, path):
         while True:
             try:
+                while not self.nfc_reader.queue.empty():
+                    self.nfc_card_code = self.nfc_reader.queue.get_nowait()
                 if(self.nfc_card_code):
                     await self.handle_nfc_card_reading(websocket)
 
                 message = await asyncio.wait_for(websocket.recv(), timeout=0.5)
+
                 if(message):
                     parts = message.split(" ")
                     if(parts[0] == "Provide"):
