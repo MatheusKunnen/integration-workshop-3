@@ -4,6 +4,8 @@ from MotionSystemController import MotionSystemController
 from NFCReader import NFCReader
 
 class WebSocketController:
+    DEBUG = True
+
     def __init__(self, ms_controller: MotionSystemController, nfc_reader: NFCReader, port=5443, host='127.0.0.1'):
         self.ms_controller = ms_controller
         self.nfc_reader = nfc_reader
@@ -22,9 +24,13 @@ class WebSocketController:
         try:
             product_id = int(str(product_id).lstrip())
             message = f"Providing product {product_id}"
+            if WebSocketController.DEBUG:
+                print(message)
             await websocket.send(message)
             self.ms_controller.provide_product(product_id)
             message = f"Product provided {product_id}"
+            if WebSocketController.DEBUG:
+                print(message)
             await websocket.send(message)
         except Exception as e:
             error_message = f"Error providing product {product_id}: {str(e)}"
@@ -34,6 +40,8 @@ class WebSocketController:
     async def handle_nfc_card_reading(self, websocket):
         try:
             message = f"tagNumber {self.nfc_card_code}"
+            if WebSocketController.DEBUG:
+                print(message)
             await websocket.send(message)
             self.nfc_card_code = None
         except websockets.exceptions.ConnectionClosed:
@@ -54,6 +62,8 @@ class WebSocketController:
                 message = await asyncio.wait_for(websocket.recv(), timeout=0.5)
 
                 if(message):
+                    if WebSocketController.DEBUG:
+                        print("message", message)
                     parts = message.split(" ")
                     if(parts[0] == "Provide"):
                         product_id = parts[1]
