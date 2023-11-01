@@ -5,27 +5,35 @@ import { H1 } from "../../styles/styles.js";
 import Icon from "../../assets/icon_loading.png";
 import OrderService from "../../services/OrderService.js";
 import { useAuth } from "../../hooks/auth.js";
+import { useWebsocketCommunication } from "../../hooks/websocket.js";
 
 const OrderProcessing = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { requestProduct, productState } = useWebsocketCommunication();
   const { token } = useAuth();
-  const snack = location.state ? location.state : {};
 
   useEffect(() => {
+    const snack = location.state ? location.state : {};
     if (snack !== undefined && Object.keys(snack).length !== 0) {
       OrderService.purchaseSnack(snack.id, token).then((res) => {
-        // 5 seconds timeout to simulate the processing time
-        setTimeout(() => {
-          if (Object.keys(res).length !== 0) {
-            navigate("/order-finished");
-          } else {
-            navigate("/order-error");
-          }
-        }, 5000);
+        if (Object.keys(res).length !== 0) {
+          requestProduct(snack.id);
+        } else {
+          navigate("/order-error");
+        }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (productState === "success") {
+      navigate("/order-finished");
+    } else if (productState === "error") {
+      navigate("/order-error");
+    }
+  }, [navigate, productState]);
 
   return (
     <View>
