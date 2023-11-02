@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { H1 } from "../../styles/styles.js";
@@ -12,6 +12,7 @@ const OrderProcessing = () => {
   const location = useLocation();
   const { requestProduct, productState } = useWebsocketCommunication();
   const { token } = useAuth();
+  const [requested, setRequested] = useState(false);
 
   useEffect(() => {
     const snack = location.state ? location.state : {};
@@ -19,6 +20,7 @@ const OrderProcessing = () => {
       OrderService.purchaseSnack(snack.id, token).then((res) => {
         if (Object.keys(res).length !== 0) {
           requestProduct(snack.id);
+          setRequested(true);
         } else {
           navigate("/order-error");
         }
@@ -28,12 +30,14 @@ const OrderProcessing = () => {
   }, []);
 
   useEffect(() => {
+    if (!requested) return;
+    console.log(productState);
     if (productState === "success") {
       navigate("/order-finished");
     } else if (productState === "error") {
       navigate("/order-error");
     }
-  }, [navigate, productState]);
+  }, [navigate, productState, requested]);
 
   return (
     <View>
