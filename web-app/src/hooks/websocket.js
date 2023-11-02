@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import useWebSocket from "react-use-websocket";
 
 const WebsocketCommunicationContext = createContext({});
@@ -12,24 +18,24 @@ const WebsocketCommunicationProvider = ({ children }) => {
   const port = "5443";
   const { lastMessage, sendMessage } = useWebSocket(`ws://${host}:${port}`, {
     onOpen: () => console.log(`Connected to App WS`),
-    onMessage: () => {
-      if (lastMessage) {
-        const { data } = lastMessage;
-        if (data.includes("Providing product")) {
-          setProductState("providing");
-        } else if (data.includes("Product provided")) {
-          setProductState("success");
-        } else if (data.includes("Error Providing product")) {
-          setProductState("error");
-          console.log(data);
-        } else if (data.includes("tagNumber")) {
-          const nfcTagNumber = data.split("tagNumber ")[1];
-          if (waitingForTag) setTagNumber(nfcTagNumber);
-        } else {
-          console.log("Unexpected data received");
-        }
-      }
-    },
+    // onMessage: () => {
+    //   if (lastMessage) {
+    //     const { data } = lastMessage;
+    //     if (data.includes("Providing product")) {
+    //       setProductState("providing");
+    //     } else if (data.includes("Product provided")) {
+    //       setProductState("success");
+    //     } else if (data.includes("Error Providing product")) {
+    //       setProductState("error");
+    //       console.log(data);
+    //     } else if (data.includes("tagNumber")) {
+    //       const nfcTagNumber = data.split("tagNumber ")[1];
+    //       if (waitingForTag) setTagNumber(nfcTagNumber);
+    //     } else {
+    //       console.log("Unexpected data received");
+    //     }
+    //   }
+    // },
     onError: (event) => {
       console.error(event);
     },
@@ -37,10 +43,39 @@ const WebsocketCommunicationProvider = ({ children }) => {
     reconnectInterval: 3000,
   });
 
-  const requestProduct = (productId) => {
-    sendMessage(`Provide ${productId}`);
-    setProductState("requested");
-  };
+  useEffect(() => {
+    if (lastMessage) {
+      const { data } = lastMessage;
+      if (data.includes("Providing product")) {
+        setProductState("providing");
+      } else if (data.includes("Product provided")) {
+        setProductState("success");
+      } else if (data.includes("Error Providing product")) {
+        setProductState("error");
+        console.log(data);
+      } else if (data.includes("tagNumber")) {
+        const nfcTagNumber = data.split("tagNumber ")[1];
+        if (waitingForTag) setTagNumber(nfcTagNumber);
+      } else {
+        console.log(`Unexpected data received ${data}`);
+      }
+    }
+  }, [lastMessage, setProductState, waitingForTag]);
+
+  useEffect(() => {
+    if (waitingForTag) {
+      setTagNumber("");
+    }
+  }, [waitingForTag]);
+
+  const requestProduct = useCallback(
+    (productId) => {
+      console.log(`pid ${productId}`);
+      sendMessage(`Provide ${productId}`);
+      setProductState("requested");
+    },
+    [sendMessage, setProductState]
+  );
 
   return (
     <WebsocketCommunicationContext.Provider
