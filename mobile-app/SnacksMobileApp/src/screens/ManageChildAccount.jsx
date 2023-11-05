@@ -32,13 +32,13 @@ function ManageChildAccount({ route,navigation}) {
                 <CustomButton
                     title={"Budget & Snacks"} 
                     colorScheme={"purple"}
-                    onPress={() => console.log("Budget & Snacks button pressed")}
+                    onPress={() => navigation.navigate('BudgetAndSnacks', { child: child })}
                 />
                 
                 <CustomButton
                     title={"Order History"} 
                     colorScheme={"purple"}
-                    onPress={() => console.log("Order History button pressed")}
+                    onPress={() => navigation.navigate('OrderHistory', { child: child })}
                 />
             </View>
         </View>

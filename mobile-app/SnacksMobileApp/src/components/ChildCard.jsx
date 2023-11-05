@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import * as Colors from '../utils/colors.js';
 
-function ChildCard({ name, balance = "R$00,00", onPress }) {
+function ChildCard({ name, totalSpent = "000", onPress }) {
   return (
     <View style={styles.card}>
       {name ? (
@@ -11,7 +11,9 @@ function ChildCard({ name, balance = "R$00,00", onPress }) {
                 <Text style={styles.boldText}>{name}</Text> already spent
                 </Text>
 
-            <Text style={styles.balanceText}>{`R$${balance}`}</Text>
+            <Text style={styles.balanceText}>
+                R${totalSpent.slice(0, -2) || '0'},{totalSpent.slice(-2)}
+            </Text>
 
             <View style={styles.iconContainer}>
                 <Image source={require('../assets/right_arrow_icon.png')} style={styles.icon} />

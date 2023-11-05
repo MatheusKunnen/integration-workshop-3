@@ -6,6 +6,7 @@ import ChildCard from '../components/ChildCard';
 import { useAuth } from '../AuthContext';
 import { useFocusEffect } from '@react-navigation/native';
 import GetChildrenService from '../services/GetChildrenService';
+import OrderHistoryService from '../services/OrderHistoryService.jsx';
 import { useState } from 'react';
 
 function Home({ navigation }) {
@@ -13,6 +14,7 @@ function Home({ navigation }) {
     const { token } = useAuth();
 
     const [children, setchildren] = useState([]);
+    const [totalSpent, setTotalSpent] = useState([]);
 
     const loadChildren = async () => {
         await GetChildrenService.getChildren(token).then((response) => {
@@ -24,9 +26,22 @@ function Home({ navigation }) {
         });
     };
 
+    const getTotalSpent = async (id) => {
+        const total = await OrderHistoryService.getTotalSpent(id, token);
+        return total;
+    }
+
     useFocusEffect(
         React.useCallback(() => {
             loadChildren();
+            const array = totalSpent;
+            children.forEach(async (child) => {
+                
+                const total = await getTotalSpent(child.id);
+                array[child.id] = total;
+            })
+            setTotalSpent(array);
+
         }, [])
     );
     
@@ -56,7 +71,7 @@ function Home({ navigation }) {
                         <ChildCard 
                             key={index} 
                             name={child.name} 
-                            balance={"0,00"} 
+                            totalSpent={totalSpent[child.id] ? String(totalSpent[child.id]) : "000"}
                             onPress={() => {
                                 navigation.navigate('ManageChildAccount', { child: child });
                             }}
@@ -69,7 +84,7 @@ function Home({ navigation }) {
             <CustomButton
                 title={"Register Child"}
                 colorScheme={"dark"}
-                onPress={() => console.log('Register Child button pressed')}
+                onPress={() => navigation.navigate('RegisterChild')}
             />
         </View>
         </SafeAreaView>
