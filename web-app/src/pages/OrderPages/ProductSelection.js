@@ -63,7 +63,7 @@ const ProductSelection = () => {
         ))}
       </ProductContainer>
       <Balance>
-        <BalanceText>credit available: R${credit.toFixed(2)}</BalanceText>
+        <BalanceText>credit available: R${(credit/100).toFixed(2)}</BalanceText>
       </Balance>
     </Wrapper>
   );

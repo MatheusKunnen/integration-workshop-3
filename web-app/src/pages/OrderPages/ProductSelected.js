@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { H3, Text, Balance, BalanceText } from "../../styles/styles.js";
@@ -11,12 +11,24 @@ const ProductSelected = () => {
   const navigate = useNavigate();
   const { childData } = useAuth();
   const snack = location.state ? location.state : {};
+  const [creditAfter, setCreditAfter] = useState(0);
+  const [isActive, setIsActive] = useState(false);
 
   const handleConfirm = () => {
     navigate("/order-processing", {
       state: snack,
     });
   };
+
+  useEffect(() => {
+    setCreditAfter((childData.credit/100) - (snack.price/100));
+    if(creditAfter < 0) {
+      setIsActive(false);
+    } else {
+      setIsActive(true);
+    }
+  }, [snack]);
+
 
   return (
     <Wrapper>
@@ -35,10 +47,10 @@ const ProductSelected = () => {
       <Balance>
         <BalanceText>
           credit after purchase: R$
-          {(childData.credit - snack.price / 100).toFixed(2)}
+          {creditAfter.toFixed(2)}
         </BalanceText>
       </Balance>
-      <ButtonWrapper onClick={handleConfirm}>
+      <ButtonWrapper onClick={handleConfirm} isActive={isActive}>
         <ButtonContainer>
           <ButtonText>confirm</ButtonText>
         </ButtonContainer>
@@ -84,6 +96,7 @@ const Image = styled.img`
 `;
 
 const ButtonWrapper = styled.div`
+  pointer-events: ${(props) => (props.isActive ? "auto" : "none")};
   background-color: var(--color-secondary-black);
   border-radius: 10px;
   cursor: pointer;
