@@ -46,6 +46,24 @@ class Axis:
 
     def move_to_position(self, position, direct=False):
         self.move(position - self.__current_pos, direct)
+        if position == 0:
+            self.home()
+
+    def home(self):
+        self.__safe_mode = False
+        
+        while not self.__limiter.is_on(): # Find min limiter
+             self.move(-self.__delta_step, True)
+             self.__current_pos += self.__delta_step
+
+        while self.__limiter.is_on():
+            self.move(self.__delta_step, True)
+            self.__current_pos -= self.__delta_step
+        
+        self.move(self.__safe_steps, True)
+        self.__safe_mode = True
+        self.__current_pos = 0
+            
         
     def initialize(self):
         print(f"Calibrating {self.__name}")
