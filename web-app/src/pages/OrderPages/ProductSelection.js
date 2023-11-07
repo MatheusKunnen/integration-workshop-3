@@ -26,7 +26,7 @@ const ProductSelection = () => {
 
   const setAllowedSnacks = (snacks) => {
     const filteredSnacks = snacks.filter((snack) =>
-      childData.allowedSnacks.includes(snack.id)
+      childData.allowedSnacks.includes(snack.id) && snack.stock > 0
     );
     setChildSnacks(filteredSnacks);
   };
