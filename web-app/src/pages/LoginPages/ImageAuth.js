@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { H3 } from "../../styles/styles.js";
@@ -14,6 +14,17 @@ const ImageAuth = () => {
   const passwordGroup = rest;
   const [attempt, setAttempt] = useState(0); // zero attempts
   const [displayMessage, setDisplayMessage] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      navigate("/");
+    }, 20000); // 20 seconds
+
+    // Clear the timeout if the component is unmounted or the user navigates away
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [navigate]);
 
   const handleClick = async (imageId) => {
     const loginStatus = await logIn(childData.tagNumber, imageId, childData);
@@ -49,7 +60,11 @@ const ImageAuth = () => {
         ))}
       </ImageContainer>
       <div>
-        {displayMessage ? <WrongImageText>Wrong image, try again!</WrongImageText> : <div style={{height: '4vh'}}></div>}
+        {displayMessage ? (
+          <WrongImageText>Wrong image, try again!</WrongImageText>
+        ) : (
+          <div style={{ height: "4vh" }}></div>
+        )}
       </div>
     </Wrapper>
   );

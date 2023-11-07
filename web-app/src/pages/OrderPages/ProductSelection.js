@@ -13,9 +13,20 @@ const ProductSelection = () => {
   const [childSnacks, setChildSnacks] = useState([]);
   const credit = childData.credit ? childData.credit : 0;
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      navigate("/");
+    }, 20000); // 20 seconds
+
+    // Clear the timeout if the component is unmounted or the user navigates away
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [navigate]);
+
   const setAllowedSnacks = (snacks) => {
     const filteredSnacks = snacks.filter((snack) =>
-      childData.allowedSnacks.includes(snack.id)
+      childData.allowedSnacks.includes(snack.id) && snack.stock > 0
     );
     setChildSnacks(filteredSnacks);
   };
@@ -63,7 +74,9 @@ const ProductSelection = () => {
         ))}
       </ProductContainer>
       <Balance>
-        <BalanceText>credit available: R${(credit/100).toFixed(2)}</BalanceText>
+        <BalanceText>
+          credit available: R${(credit / 100).toFixed(2)}
+        </BalanceText>
       </Balance>
     </Wrapper>
   );
@@ -76,7 +89,7 @@ const Wrapper = styled.div`
   height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;  
+  align-items: center;
   justify-content: center;
 `;
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { H1 } from "../../styles/styles.js";
-import Icon from "../../assets/icon_loading.png";
+import Icon from "../../assets/spinning_arrow.gif";
 import OrderService from "../../services/OrderService.js";
 import { useAuth } from "../../hooks/auth.js";
 import { useWebsocketCommunication } from "../../hooks/websocket.js";
@@ -22,7 +22,9 @@ const OrderProcessing = () => {
           requestProduct(snack.id);
           setRequested(true);
         } else {
-          navigate("/order-error");
+          navigate("/order-error", {
+            state: "Motion system error!",
+          });
         }
       });
     }
@@ -35,7 +37,9 @@ const OrderProcessing = () => {
     if (productState === "success") {
       navigate("/order-finished");
     } else if (productState === "error") {
-      navigate("/order-error");
+      navigate("/order-error", {
+        state: "Motion system error!",
+      });
     }
   }, [navigate, productState, requested]);
 
