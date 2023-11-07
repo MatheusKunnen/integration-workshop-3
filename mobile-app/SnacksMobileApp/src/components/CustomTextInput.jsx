@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lightPurple, 
     borderRadius: 8, 
     paddingHorizontal: 8,
+    paddingVertical: Platform.OS === 'ios' ? 8 : 0,
     marginBottom: 12
   },
   icon: {
