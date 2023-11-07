@@ -3,14 +3,13 @@ import styled from "styled-components";
 import { H1 } from "../../styles/styles.js";
 import Icon from "../../assets/icon_warning.png";
 import Button from "../../components/Button.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const FailedAuth = (props) => {
+const FailedAuth = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const errorMessage =
-    props.location && props.location.state
-      ? props.location.state
-      : "Failed to authenticate!";
+    location && location.state ? location.state : "Failed to authenticate!";
 
   useEffect(() => {
     const timeout = setTimeout(() => {

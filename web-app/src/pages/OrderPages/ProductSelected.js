@@ -12,7 +12,6 @@ const ProductSelected = () => {
   const { childData } = useAuth();
   const snack = location.state ? location.state : {};
   const [creditAfter, setCreditAfter] = useState(0);
-  const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -26,18 +25,19 @@ const ProductSelected = () => {
   }, [navigate]);
 
   const handleConfirm = () => {
-    navigate("/order-processing", {
-      state: snack,
-    });
+    if (creditAfter < 0) {
+      navigate("/order-error", {
+        state: "Not enough credit!",
+      });
+    } else {
+      navigate("/order-processing", {
+        state: snack,
+      });
+    }
   };
 
   useEffect(() => {
     setCreditAfter(childData.credit / 100 - snack.price / 100);
-    if (creditAfter < 0) {
-      setIsActive(false);
-    } else {
-      setIsActive(true);
-    }
   }, [snack]);
 
   return (
@@ -60,7 +60,7 @@ const ProductSelected = () => {
           {creditAfter.toFixed(2)}
         </BalanceText>
       </Balance>
-      <ButtonWrapper onClick={handleConfirm} isActive={isActive}>
+      <ButtonWrapper onClick={handleConfirm}>
         <ButtonContainer>
           <ButtonText>confirm</ButtonText>
         </ButtonContainer>
@@ -106,7 +106,6 @@ const Image = styled.img`
 `;
 
 const ButtonWrapper = styled.div`
-  pointer-events: ${(props) => (props.isActive ? "auto" : "none")};
   background-color: var(--color-secondary-black);
   border-radius: 10px;
   cursor: pointer;

@@ -3,14 +3,13 @@ import styled from "styled-components";
 import { H1 } from "../../styles/styles.js";
 import Icon from "../../assets/icon_warning.png";
 import Button from "../../components/Button.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const OrderError = (props) => {
+const OrderError = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const errorMessage =
-    props.location && props.location.state
-      ? props.location.state
-      : "Something went wrong!";
+    location && location.state ? location.state : "Something went wrong!";
 
   useEffect(() => {
     const timeout = setTimeout(() => {

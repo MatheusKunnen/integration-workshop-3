@@ -22,7 +22,9 @@ const OrderProcessing = () => {
           requestProduct(snack.id);
           setRequested(true);
         } else {
-          navigate("/order-error");
+          navigate("/order-error", {
+            state: "Motion system error!",
+          });
         }
       });
     }
@@ -35,7 +37,9 @@ const OrderProcessing = () => {
     if (productState === "success") {
       navigate("/order-finished");
     } else if (productState === "error") {
-      navigate("/order-error");
+      navigate("/order-error", {
+        state: "Motion system error!",
+      });
     }
   }, [navigate, productState, requested]);
 

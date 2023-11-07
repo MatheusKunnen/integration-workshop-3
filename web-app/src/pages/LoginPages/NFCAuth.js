@@ -13,17 +13,17 @@ const NFCAuth = () => {
 
   const getChildData = useCallback(
     async (tag) => {
-      await LoginService.getChildDataByTagNumber(tag)
-        .then((res) => {
-          console.log(res);
-          if (Object.keys(res).length !== 0 && res.constructor === Object) {
-            navigate("/image-auth", { state: res });
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          navigate("/failed-auth", { state: "Child not registered!" });
-        });
+      try {
+        const res = await LoginService.getChildDataByTagNumber(tag);
+        console.log(res);
+        if (Object.keys(res).length !== 0 && res.constructor === Object) {
+          navigate("/image-auth", { state: res });
+        } else {
+          navigate("/failed-auth", { state: "Child tag not registered!" });
+        }
+      } catch (err) {
+        console.error(err);
+      }
     },
     [navigate]
   );
@@ -50,16 +50,6 @@ const NFCAuth = () => {
       <H1>Hello!</H1>
       <H2>Place your tag on the reader.</H2>
       <Image src={Icon} alt="Tag icon" />
-      {/* Remove button for production */}
-      <button
-        onClick={() => {
-          setTagNumber("123");
-        }}
-        style={{ backgroundColor: "black" }}
-      >
-        <H2>Use NFC tag</H2>
-      </button>
-      <></>
     </View>
   );
 };
