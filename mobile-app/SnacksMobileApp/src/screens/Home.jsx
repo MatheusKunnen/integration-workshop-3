@@ -8,6 +8,7 @@ import GetChildrenService from '../services/GetChildrenService';
 import OrderHistoryService from '../services/OrderHistoryService.jsx';
 import GetBalanceService from '../services/GetBalanceService.jsx';
 import { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 
 function Home({ navigation }) {
 
@@ -27,35 +28,38 @@ function Home({ navigation }) {
         return balance;
     }
 
-    useEffect(() => {
-      const fetchData = async () => {
-          try {
-              const childrenResponse = await GetChildrenService.getChildren(token);
-              setChildren(childrenResponse);
+    const fetchData = async () => {
+      try {
+          const childrenResponse = await GetChildrenService.getChildren(token);
+          setChildren(childrenResponse);
 
-              const totalSpentPromises = childrenResponse.map(async (child) => {
-                  const total = await getTotalSpent(child.id);
-                  return { id: child.id, total };
-              });
+          const totalSpentPromises = childrenResponse.map(async (child) => {
+              const total = await getTotalSpent(child.id);
+              return { id: child.id, total };
+          });
 
-              const totals = await Promise.all(totalSpentPromises);
-              const totalSpentObject = totals.reduce((acc, { id, total }) => {
-                  acc[id] = total;
-                  return acc;
-              }, {});
+          const totals = await Promise.all(totalSpentPromises);
+          const totalSpentObject = totals.reduce((acc, { id, total }) => {
+              acc[id] = total;
+              return acc;
+          }, {});
 
-              setTotalSpent(totalSpentObject);
+          setTotalSpent(totalSpentObject);
 
-              // Fetch and set the parent balance
-              const balance = await getParentBalance(token);
-              setParentBalance(balance);
-          } catch (error) {
-              console.error(error);
-              alert('Failed to load data');
-          }
-      };
-      fetchData();
-  }, [token]);
+          // Fetch and set the parent balance
+          const balance = await getParentBalance(token);
+          setParentBalance(balance);
+      } catch (error) {
+          console.error(error);
+          alert('Failed to load data');
+      }
+    };
+
+    useFocusEffect(
+      React.useCallback(() => {
+        fetchData();
+      }, [])
+    );
 
     return (
 
@@ -72,7 +76,7 @@ function Home({ navigation }) {
                     <Text style={styles.greeting}>{`Hello!`}</Text>
                 </View>
 
-                <Text style={styles.balanceText}>Your Balance: R${String(parentBalance).slice(0, -2) || '0'},{String(parentBalance).slice(-2)}</Text>
+                <Text style={styles.balanceText}>Your Balance: R$ {String(parentBalance).slice(0, -2) || '0'},{String(parentBalance).slice(-2)}</Text>
 
 
                 {children.length === 0 ? (
