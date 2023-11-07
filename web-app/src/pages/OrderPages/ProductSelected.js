@@ -14,6 +14,17 @@ const ProductSelected = () => {
   const [creditAfter, setCreditAfter] = useState(0);
   const [isActive, setIsActive] = useState(false);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      navigate("/");
+    }, 20000); // 20 seconds
+
+    // Clear the timeout if the component is unmounted or the user navigates away
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [navigate]);
+
   const handleConfirm = () => {
     navigate("/order-processing", {
       state: snack,
@@ -21,14 +32,13 @@ const ProductSelected = () => {
   };
 
   useEffect(() => {
-    setCreditAfter((childData.credit/100) - (snack.price/100));
-    if(creditAfter < 0) {
+    setCreditAfter(childData.credit / 100 - snack.price / 100);
+    if (creditAfter < 0) {
       setIsActive(false);
     } else {
       setIsActive(true);
     }
   }, [snack]);
-
 
   return (
     <Wrapper>
@@ -74,7 +84,7 @@ const Wrapper = styled.div`
 const TextContainer = styled.div`
   display: flex;
   justify-content: center;
-  align-items: center;  
+  align-items: center;
   margin-top: 1vh;
 `;
 
