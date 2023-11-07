@@ -1,5 +1,5 @@
 import React from "react";
-import {View } from "react-native";
+import {View, SafeAreaView } from "react-native";
 import * as Colors from "../utils/colors.js";
 import CustomButton from "../components/CustomButton.jsx";
 import CustomHeader from "../components/CustomHeader.jsx";
@@ -7,7 +7,7 @@ import CustomHeader from "../components/CustomHeader.jsx";
 function ManageChildAccount({ route,navigation}) {
     const { child } = route.params;
     return (
-        <View style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1 }}>
             <CustomHeader
                 title={`${child.name}'s Account`}
                 onPress={() => {
@@ -41,7 +41,7 @@ function ManageChildAccount({ route,navigation}) {
                     onPress={() => navigation.navigate('OrderHistory', { child: child })}
                 />
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 

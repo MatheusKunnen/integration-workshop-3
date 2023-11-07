@@ -54,13 +54,14 @@ const styles = StyleSheet.create({
         color: Colors.darkGray,
     },
     number: {
+        overflow: 'hidden',
+        borderRadius: 8,
         fontSize: 24,
         width: 170,
         backgroundColor: Colors.lightPurple,
         color: Colors.darkGray,
         textAlign: 'center',
         fontWeight: '500',
-        borderRadius: 8,
         padding: 4,
         margin: 10
     },

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { SafeAreaView, Text, View, StyleSheet, Dimensions, Image, FlatList} from "react-native";
 import * as Colors from "../utils/colors.js";
 import { useFocusEffect } from "@react-navigation/native";
@@ -43,12 +43,13 @@ function OrderHistory ({route, navigation}) {
         });
     }
 
-    useFocusEffect(
-        React.useCallback(() => {
-            getSnacksImageSet();
-            getOrderHistory();
-        }, [])
-    );
+    useEffect(() => {
+        Promise.all([getSnacksImageSet(), getOrderHistory()])
+            .catch((error) => {
+                console.error(error);
+                alert('Failed to load data');
+            });
+    }, []);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -61,8 +62,8 @@ function OrderHistory ({route, navigation}) {
             <View style={styles.content}>
                 <FlatList
                     data={orders}
-                    renderItem={({item}) => (
-                        <View style={styles.item}>
+                    renderItem={({item, index}) => (
+                        <View style={styles.item} key={index}>
                             <Image source={{uri: snacks[item.snackId - 1].image.url}} style={styles.image} />
                             <View style={styles.itemTextContainer}>
                                 <Text style={styles.itemName}>{snacks[item.snackId - 1].name}</Text>
@@ -75,7 +76,7 @@ function OrderHistory ({route, navigation}) {
                             </View>
                         </View>
                     )}
-                    keyExtractor={item => item.id}
+                    keyExtractor={(item, index) => index.toString()}
                 />
             </View>
         </SafeAreaView>

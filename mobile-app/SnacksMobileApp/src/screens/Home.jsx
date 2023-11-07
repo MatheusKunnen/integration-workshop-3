@@ -1,56 +1,68 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, StatusBar, SafeAreaView } from 'react-native';
 import * as Colors from '../utils/colors.js';
 import CustomButton from '../components/CustomButton';
 import ChildCard from '../components/ChildCard';
 import { useAuth } from '../AuthContext';
-import { useFocusEffect } from '@react-navigation/native';
 import GetChildrenService from '../services/GetChildrenService';
 import OrderHistoryService from '../services/OrderHistoryService.jsx';
+import GetBalanceService from '../services/GetBalanceService.jsx';
 import { useState } from 'react';
 
 function Home({ navigation }) {
 
     const { token } = useAuth();
 
-    const [children, setchildren] = useState([]);
+    const [children, setChildren] = useState([]);
     const [totalSpent, setTotalSpent] = useState([]);
-
-    const loadChildren = async () => {
-        await GetChildrenService.getChildren(token).then((response) => {
-            console.log(response);
-            setchildren(response);
-        }).catch((error) => {
-            console.log(error);
-            alert('Failed to load children');
-        });
-    };
+    const [parentBalance, setParentBalance] = useState(0);
 
     const getTotalSpent = async (id) => {
         const total = await OrderHistoryService.getTotalSpent(id, token);
         return total;
     }
 
-    useFocusEffect(
-        React.useCallback(() => {
-            loadChildren();
-            const array = totalSpent;
-            children.forEach(async (child) => {
-                
-                const total = await getTotalSpent(child.id);
-                array[child.id] = total;
-            })
-            setTotalSpent(array);
+    const getParentBalance = async (token) => {
+        const balance = await GetBalanceService.getBalance(token);
+        return balance;
+    }
 
-        }, [])
-    );
-    
+    useEffect(() => {
+      const fetchData = async () => {
+          try {
+              const childrenResponse = await GetChildrenService.getChildren(token);
+              setChildren(childrenResponse);
+
+              const totalSpentPromises = childrenResponse.map(async (child) => {
+                  const total = await getTotalSpent(child.id);
+                  return { id: child.id, total };
+              });
+
+              const totals = await Promise.all(totalSpentPromises);
+              const totalSpentObject = totals.reduce((acc, { id, total }) => {
+                  acc[id] = total;
+                  return acc;
+              }, {});
+
+              setTotalSpent(totalSpentObject);
+
+              // Fetch and set the parent balance
+              const balance = await getParentBalance(token);
+              setParentBalance(balance);
+          } catch (error) {
+              console.error(error);
+              alert('Failed to load data');
+          }
+      };
+      fetchData();
+  }, [token]);
+
     return (
 
       <SafeAreaView style={{flex:1}}>
         <StatusBar 
-                  barStyle="dark-content" 
-                  backgroundColor={styles.container.backgroundColor} 
+            barStyle="dark-content" 
+            backgroundColor={styles.container.backgroundColor} 
         />
 
         <View style={styles.container}>
@@ -59,6 +71,9 @@ function Home({ navigation }) {
                     <Image source={require('../assets/big_user_icon.png')} style={styles.icon} />
                     <Text style={styles.greeting}>{`Hello!`}</Text>
                 </View>
+
+                <Text style={styles.balanceText}>Your Balance: R${String(parentBalance).slice(0, -2) || '0'},{String(parentBalance).slice(-2)}</Text>
+
 
                 {children.length === 0 ? (
                   <View style={styles.cardSection}>
@@ -103,6 +118,12 @@ const styles = StyleSheet.create({
   topSection: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  balanceText: {
+    color: Colors.darkGray,
+    fontSize: 24,
+    fontWeight: '500',
+    marginTop: 20,
   },
   icon: {
     width: 50,
