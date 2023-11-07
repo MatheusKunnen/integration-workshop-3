@@ -4,9 +4,9 @@ from .LimiterSwitch import LimiterSwitch
 class ProductDispenser:
 
     __SAFE_DEPTH_STEPS = round(4096/2)
-    __DELTA_STEPS = round(4096/4)
+    __DELTA_STEPS = round(4096/8)
     __STEPS_PER_REV = 4096
-    __WIGGLE_STEPS = round(180/2)
+    __WIGGLE_STEPS = round(180/4)
 
     def __init__(self, pd_motor: StepperDriver, depth_motor: StepperDriver, limiter: LimiterSwitch):
         self.__pd_motor = pd_motor
@@ -38,22 +38,32 @@ class ProductDispenser:
         dir = 1
         while left_depth > 0:
             self.__pd_motor.step(dir*ProductDispenser.__WIGGLE_STEPS)
-            # dir *= -1
+            dir *= -1
             left_depth -= ProductDispenser.__DELTA_STEPS
             self.__depth_motor.step(ProductDispenser.__DELTA_STEPS)
-
-            self.__pd_motor.step(-ProductDispenser.__WIGGLE_STEPS)
+            
+            self.__pd_motor.step(-dir*ProductDispenser.__WIGGLE_STEPS)
+            
         self.__depth_motor.step(-2*ProductDispenser.__STEPS_PER_REV)
 
         self.__pd_motor.set_velocity(StepperVelocity.SLOW)        
         self.__pd_motor.step(turns)
 
+        self.__pd_motor.step(-round(ProductDispenser.__WIGGLE_STEPS/2), StepperVelocity.FAST)
+        self.__depth_motor.step(-round(ProductDispenser.__STEPS_PER_REV/4), StepperVelocity.SLOW)
+
         t_steps = ProductDispenser.__STEPS_PER_REV
         self.__depth_motor.set_velocity(StepperVelocity.FAST)
-        while not self.__limiter.is_on() and t_steps < depth*3:
+        while not self.__limiter.is_on() and t_steps < depth*2:
             self.__depth_motor.step(-ProductDispenser.__DELTA_STEPS)
             t_steps += ProductDispenser.__DELTA_STEPS
-
+        
+        if not self.__limiter.is_on():
+            self.__depth_motor.set_velocity(StepperVelocity.SLOW)
+            while not self.__limiter.is_on():
+                self.__depth_motor.step(-ProductDispenser.__DELTA_STEPS)
+                t_steps += ProductDispenser.__DELTA_STEPS
+                
         self.__depth_motor.set_velocity(StepperVelocity.FAST)
         while self.__limiter.is_on():
             self.__depth_motor.step(ProductDispenser.__DELTA_STEPS)

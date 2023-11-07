@@ -1,0 +1,10 @@
+{
+  "products": [
+    { "id": 1, "v_pos": 450, "h_pos": 450, "depth": 24576, "turns": 6145 },
+    { "id": 2, "v_pos": 450, "h_pos": 2900, "depth": 24576, "turns": 6145 },
+    { "id": 3, "v_pos": 450, "h_pos": 5250, "depth": 24576, "turns": 6145 },
+    { "id": 4, "v_pos": 4850, "h_pos": 450, "depth": 24576, "turns": 6145 },
+    { "id": 5, "v_pos": 4850, "h_pos": 2900, "depth": 24576, "turns": 6145 },
+    { "id": 6, "v_pos": 4850, "h_pos": 5250, "depth": 24576, "turns": 6145 }
+  ]
+}

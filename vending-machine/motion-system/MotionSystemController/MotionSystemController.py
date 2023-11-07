@@ -7,6 +7,8 @@ from .LimiterSwitch import LimiterSwitch
 from .ReflectanceSensor import ReflectanceSensor
 from .ProductDispenser import ProductDispenser
 
+import json
+
 try:
     import RPi.GPIO as GPIO
 except:
@@ -15,12 +17,12 @@ except:
 class MotionSystemController:
 
     __DEFAULT_PRODUCTS = [
-        {"id": 1, "v_pos": 450, "h_pos": 450, "depth":4096*6, "turns":4096},
-        {"id": 2, "v_pos": 450, "h_pos": 2900, "depth":4096*6, "turns":4096},
-        {"id": 3, "v_pos": 450, "h_pos": 5300, "depth":4096*6, "turns":4096},
-        {"id": 4, "v_pos": 4850, "h_pos": 450, "depth":4096*6, "turns":4096},
-        {"id": 5, "v_pos": 4850, "h_pos": 2900, "depth":4096*6, "turns":4096},
-        {"id": 6, "v_pos": 4850, "h_pos": 5250, "depth":4096*6, "turns":4096},
+        {"id": 1, "v_pos": 450, "h_pos": 450, "depth":4096*6, "turns":4096+2048},
+        {"id": 2, "v_pos": 450, "h_pos": 2900, "depth":4096*6, "turns":4096+2048},
+        {"id": 3, "v_pos": 450, "h_pos": 5250, "depth":4096*6, "turns":4096+2048},
+        {"id": 4, "v_pos": 4850, "h_pos": 450, "depth":4096*6, "turns":4096+2048},
+        {"id": 5, "v_pos": 4850, "h_pos": 2900, "depth":4096*6, "turns":4096+2048},
+        {"id": 6, "v_pos": 4850, "h_pos": 5250, "depth":4096*6, "turns":4096+2048},
     ]
 
     def __init__(self, config: MotionSystemConfiguration):
@@ -51,6 +53,7 @@ class MotionSystemController:
 
         print(f"Providing product {v_pos}, {h_pos}, {depth}, {turns}")
         try:
+            self.__load_products_pos()
             self.__enable_axes()
 
             self.__v_axis.move_to_position(v_pos)
@@ -80,9 +83,28 @@ class MotionSystemController:
             self.__enable_axes()
             self.__h_axis.initialize()
             self.__v_axis.initialize()
-            # self.manual_mode_menu()
+            self.manual_mode_menu()
         finally:
             self.__disable_axes()
+
+    def __load_products_pos(self):
+        filename = f"./products_positions.json"
+        try:
+            data = None
+            
+            with open(filename, 'r') as file:
+                data = json.load(file)
+            
+            if data is None:
+                raise Exception('Invalid file')
+            
+            if 'products' in data:
+                self.__products = data['products']
+            else:
+                print(f'Invalid products positions file for {self.__name}')
+                self.__products = MotionSystemController.__DEFAULT_PRODUCTS
+        except:
+            self.__products = MotionSystemController.__DEFAULT_PRODUCTS
 
     def manual_mode_menu(self):
         try:
@@ -120,7 +142,7 @@ class MotionSystemController:
             GPIO.output(pin, False)
 
         for pin in self.__config.input_pins():
-            GPIO.setup(pin, GPIO.IN)
+            GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     def __enable_axes(self):
         GPIO.output(self.__config.en_pin, False)
