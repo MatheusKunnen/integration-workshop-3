@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, StatusBar, View, TouchableOpacity, Image } from "react-native";
 import * as Colors from "../utils/colors.js";
+import BackIcon from "../assets/back_icon.svg";
 
 function CustomHeader({ title, onPress}) {
     return (
@@ -23,13 +24,7 @@ function CustomHeader({ title, onPress}) {
                 }}
                 onPress={onPress}>
 
-                <Image
-                    style={{
-                        width:11,
-                        height: 20,
-                    }}
-                    source={require("../assets/back_icon.png")}
-                />
+                <BackIcon width={11} height={20} />
             </TouchableOpacity>
 
             <Text

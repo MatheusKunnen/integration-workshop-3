@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import * as Colors from '../utils/colors.js';
 import { useFocusEffect } from '@react-navigation/native';
+import AddCircleIcon from '../assets/add-circle.svg'; 
+import MinusCircleIcon from '../assets/minus-circle.svg';
 
 function BudgetControl({ allowedBudget, onBudgetChange }) {  
     const decrement = () => {
@@ -26,13 +28,13 @@ function BudgetControl({ allowedBudget, onBudgetChange }) {
     return (
       <View style={styles.container}>
         <TouchableOpacity onPress={decrement} style={styles.button}>
-          <Image source={require('../assets/minus-circle.png')} style={styles.buttonImage} />
+          <MinusCircleIcon style={styles.buttonImage} />
         </TouchableOpacity>
   
         <Text style={styles.number}>{`R$${reais},${cents}`}</Text>
   
         <TouchableOpacity onPress={increment} style={styles.button}>
-          <Image source={require('../assets/add-circle.png')} style={styles.buttonImage} />
+          <AddCircleIcon style={styles.buttonImage} />
         </TouchableOpacity>
       </View>
     );
@@ -45,6 +47,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     button: {
+        width: 36,
+        height: 36,
+    },
+    buttonImage: {
         width: 36,
         height: 36,
     },

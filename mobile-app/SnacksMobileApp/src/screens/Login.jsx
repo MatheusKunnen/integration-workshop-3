@@ -5,6 +5,7 @@ import CustomButton from '../components/CustomButton.jsx';
 import CustomTextInput from '../components/CustomTextInput.jsx';
 import { useAuth } from '../AuthContext';
 import LoginService from '../services/LoginService.jsx';
+import { useFocusEffect } from '@react-navigation/native';
 
 function Login ({ navigation }) {
     const { login } = useAuth();
@@ -20,7 +21,6 @@ function Login ({ navigation }) {
                 email: username,
                 password: password,
             }).then((response) => {
-                console.log(response);
                 if (response === null) {
                     alert('Invalid username or password');
                     return;
@@ -35,8 +35,16 @@ function Login ({ navigation }) {
         }
     };
 
+    useFocusEffect(
+        React.useCallback(() => {
+            setUsername('');
+            setPassword('');
+        }, [])
+    );
+
     return (
           <SafeAreaView style={styles.container}> 
+
               <StatusBar 
                   barStyle="dark-content" 
                   backgroundColor={styles.container.backgroundColor} 
@@ -48,19 +56,19 @@ function Login ({ navigation }) {
               />
 
               <CustomTextInput 
-                  iconSource={require('../assets/user_icon.png')}
+                  icon='user'
                   placeholder="E-mail"
                   onChangeText={setUsername}
                   value={username}
               />
 
               <CustomTextInput 
-                  iconSource={require('../assets/lock_icon.png')}
+                  icon='lock'
                   placeholder="Password"
                   onChangeText={setPassword}
                   value={password}
                   secureTextEntry={true}
-              />
+              /> 
               
               <CustomButton 
                   title="Login" 

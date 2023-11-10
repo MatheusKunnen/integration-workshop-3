@@ -51,7 +51,6 @@ function RegisterChild({navigation}) {
     RegisterChildService.registerChild(child, token)
       .then(response => {
         if (response && typeof response === 'object') {
-          console.log(response);
           // alert('Child registered successfully');
           navigation.navigate('BudgetAndSnacks', { child: response });
         } else {
@@ -68,8 +67,6 @@ function RegisterChild({navigation}) {
   const getImageSet = async () => {
     PasswordGroupService.getRandomPasswordGroup()
       .then(response => {
-        console.log(response);
-
         if (response && typeof response === 'object') {
           const {id, ...images} = response;
 
