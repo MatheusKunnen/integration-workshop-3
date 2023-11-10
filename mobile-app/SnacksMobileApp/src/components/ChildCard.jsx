@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import * as Colors from '../utils/colors.js';
+import RightArrowIcon from '../assets/right_arrow_icon.svg';
+
 
 function ChildCard({ name, totalSpent = "000", onPress }) {
   return (
@@ -16,7 +18,7 @@ function ChildCard({ name, totalSpent = "000", onPress }) {
             </Text>
 
             <View style={styles.iconContainer}>
-                <Image source={require('../assets/right_arrow_icon.png')} style={styles.icon} />
+                <RightArrowIcon style={styles.icon} />
                 <Text style={styles.buttonIndicatorText}>Manage</Text>
             </View>
         </TouchableOpacity>

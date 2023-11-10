@@ -37,6 +37,7 @@ function Login ({ navigation }) {
 
     return (
           <SafeAreaView style={styles.container}> 
+
               <StatusBar 
                   barStyle="dark-content" 
                   backgroundColor={styles.container.backgroundColor} 
@@ -48,19 +49,19 @@ function Login ({ navigation }) {
               />
 
               <CustomTextInput 
-                  iconSource={require('../assets/user_icon.png')}
+                  icon='user'
                   placeholder="E-mail"
                   onChangeText={setUsername}
                   value={username}
               />
 
               <CustomTextInput 
-                  iconSource={require('../assets/lock_icon.png')}
+                  icon='lock'
                   placeholder="Password"
                   onChangeText={setPassword}
                   value={password}
                   secureTextEntry={true}
-              />
+              /> 
               
               <CustomButton 
                   title="Login" 

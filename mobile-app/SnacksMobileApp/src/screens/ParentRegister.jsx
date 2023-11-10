@@ -1,13 +1,5 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, } from 'react-native';
 import * as Colors from '../utils/colors.js';
 import CustomButton from '../components/CustomButton.jsx';
 import CustomTextInput from '../components/CustomTextInput.jsx';
@@ -17,6 +9,9 @@ import RegisterParentService from '../services/RegisterParentService.jsx';
 import LoginService from '../services/LoginService.jsx';
 import {useAuth} from '../AuthContext';
 import TermsAndConditions from './TermsAndConditions.jsx';
+import TickSquareEmpty from '../assets/tick-square-empty.svg';
+import TickSquare from '../assets/tick-square.svg';
+
 
 function ParentRegister({navigation}) {
   const {login} = useAuth();
@@ -125,9 +120,9 @@ function ParentRegister({navigation}) {
               onPress={updateChecked}
               style={styles.checkboxContainer}>
               {isChecked ? (
-                <Image source={require('../assets/tick-square.png')} />
+                <TickSquare style={styles.icon} />
               ) : (
-                <Image source={require('../assets/tick-square-empty.png')} />
+                <TickSquareEmpty style={styles.icon} />
               )}
 
               <Text style={styles.checkboxLabel}>
@@ -187,11 +182,16 @@ const styles = StyleSheet.create({
   checkboxLabel: {
     fontSize: 16,
     marginLeft: 10,
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    color: Colors.darkGray,
   },
   bottom: {
     justifyContent: 'flex-end',
     marginBottom: 40,
+  },
+  icon: {
+    width: 36,
+    height: 36,
   },
 });
 

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Text, View, StyleSheet, Dimensions, Image, Modal, TouchableHighlight } from "react-native";
+import { Text, View, StyleSheet, Dimensions, Image, Modal } from "react-native";
 import * as Colors from "../utils/colors.js";
 import CustomHeader from "../components/CustomHeader.jsx";
 import CustomButton from "../components/CustomButton.jsx";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DeleteChildAccountService from "../services/DeleteChildAccountService";
 import { useAuth } from "../AuthContext";
+import TrashIcon from "../assets/trash.svg";
 
 function AccountDetails({ route,navigation}) {
     const { child } = route.params;
@@ -82,8 +83,7 @@ function AccountDetails({ route,navigation}) {
                 >
                     <View style={styles.popupContainer}>
                         <View style={styles.popup}>
-                            <Image 
-                                source={require('../assets/trash.png')} 
+                            <TrashIcon 
                                 style={styles.trashIcon} 
                             />
                             <Text style={styles.popupText}>

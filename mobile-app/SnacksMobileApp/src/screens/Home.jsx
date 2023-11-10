@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, StatusBar, SafeAreaView } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, StatusBar, SafeAreaView } from 'react-native';
 import * as Colors from '../utils/colors.js';
 import CustomButton from '../components/CustomButton';
 import ChildCard from '../components/ChildCard';
@@ -9,6 +9,7 @@ import OrderHistoryService from '../services/OrderHistoryService.jsx';
 import GetBalanceService from '../services/GetBalanceService.jsx';
 import { useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
+import BigUserIcon from '../assets/big_user_icon.svg';
 
 function Home({ navigation }) {
 
@@ -72,7 +73,7 @@ function Home({ navigation }) {
         <View style={styles.container}>
             <View style={styles.topContainer}>
                 <View style={styles.topSection}>
-                    <Image source={require('../assets/big_user_icon.png')} style={styles.icon} />
+                    <BigUserIcon style={styles.icon} />
                     <Text style={styles.greeting}>{`Hello!`}</Text>
                 </View>
 

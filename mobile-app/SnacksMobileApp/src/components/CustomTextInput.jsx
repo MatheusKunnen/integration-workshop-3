@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
-import { View, TextInput, Image, StyleSheet, Dimensions } from 'react-native';
+import React from 'react';
+import { View, TextInput, StyleSheet, Dimensions } from 'react-native';
 import * as Colors from '../utils/colors.js';
+import UserIcon from '../assets/user_icon.svg';
+import LockIcon from '../assets/lock_icon.svg';
 
-function CustomTextInput({ iconSource, placeholder, secureTextEntry, onChangeText, value }) {
+function CustomTextInput({ icon, placeholder, secureTextEntry, onChangeText, value }) {
   const screenWidth = Dimensions.get('window').width;
 
   return (
     <View style={[styles.inputContainer, {width: screenWidth - 80}]}>
-      {iconSource && <Image source={iconSource} style={styles.icon} />}
       
+      {icon === 'user' ?
+        <UserIcon style={styles.icon}/> 
+        : icon === 'lock' ? 
+        <LockIcon style={styles.icon}/>
+        : null }
+
       <TextInput
         style={styles.input}
         placeholder={placeholder}
@@ -23,6 +30,7 @@ function CustomTextInput({ iconSource, placeholder, secureTextEntry, onChangeTex
 
 const styles = StyleSheet.create({
   inputContainer: {
+    overflow: 'hidden',
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.lightPurple, 
@@ -32,9 +40,9 @@ const styles = StyleSheet.create({
     marginBottom: 12
   },
   icon: {
+    marginRight: 8,
     width: 30,
     height: 30,
-    marginRight: 8
   },
   input: {
     flex: 1,
