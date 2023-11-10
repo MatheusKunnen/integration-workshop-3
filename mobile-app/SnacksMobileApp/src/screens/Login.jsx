@@ -20,7 +20,6 @@ function Login ({ navigation }) {
                 email: username,
                 password: password,
             }).then((response) => {
-                console.log(response);
                 if (response === null) {
                     alert('Invalid username or password');
                     return;

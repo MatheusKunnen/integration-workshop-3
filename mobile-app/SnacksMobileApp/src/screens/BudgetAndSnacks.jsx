@@ -19,18 +19,15 @@ function BudgetAndSnacks({ route,navigation}) {
     const [budget, setBudget] = useState(child.budget);
 
     const handleSave = async () => {
-        console.log(budget);
         await UpdateBudgetService.execute(token, child.id, {
             budget: budget,
         }).then((response) => {
-            console.log(response);
-            if (response === null) {
+                if (response === null) {
                 alert('Failed to update budget');
             } else {
                 UpdateSnacksService.execute(token, child.id, {
                     allowedSnacks: selectedSnacks,
                 }).then((response) => {
-                    console.log(response);
                     if (response === null) {
                         alert('Failed to update snacks');
                     } else {
@@ -54,7 +51,6 @@ function BudgetAndSnacks({ route,navigation}) {
 
     const getSnacksImageSet = async () => {
         await GetSnacks.execute().then((response) => {
-            // console.log(response);
             setSnacks(response);
         }).catch((error) => {
             console.log(error);

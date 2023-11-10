@@ -37,7 +37,6 @@ function ParentRegister({navigation}) {
         password: password,
       })
         .then(response => {
-          console.log(response);
           if (response === null) {
             alert('Parent already regitered');
             navigation.navigate('Login');
@@ -59,7 +58,6 @@ function ParentRegister({navigation}) {
       password: password,
     })
       .then(response => {
-        console.log(response);
         if (response === null) {
           alert('Invalid e-mail or password');
           return;

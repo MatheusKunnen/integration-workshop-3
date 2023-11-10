@@ -20,7 +20,6 @@ function AccountDetails({ route,navigation}) {
 
     const handleDeleteAccount = async () => {
         await DeleteChildAccountService.deleteChildAccount(token, child.id).then((response) => {
-            console.log(response);
             navigation.navigate('Home');
         }).catch((error) => {
             console.log(error);
