@@ -5,6 +5,7 @@ import CustomButton from '../components/CustomButton.jsx';
 import CustomTextInput from '../components/CustomTextInput.jsx';
 import { useAuth } from '../AuthContext';
 import LoginService from '../services/LoginService.jsx';
+import { useFocusEffect } from '@react-navigation/native';
 
 function Login ({ navigation }) {
     const { login } = useAuth();
@@ -33,6 +34,13 @@ function Login ({ navigation }) {
             });
         }
     };
+
+    useFocusEffect(
+        React.useCallback(() => {
+            setUsername('');
+            setPassword('');
+        }, [])
+    );
 
     return (
           <SafeAreaView style={styles.container}> 

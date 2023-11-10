@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, StatusBar, SafeAreaView, TouchableOpacity } from 'react-native';
 import * as Colors from '../utils/colors.js';
 import CustomButton from '../components/CustomButton';
 import ChildCard from '../components/ChildCard';
@@ -13,12 +13,17 @@ import BigUserIcon from '../assets/big_user_icon.svg';
 
 function Home({ navigation }) {
 
-    const { token } = useAuth();
+    const { token, logout } = useAuth();
 
     const [children, setChildren] = useState([]);
     const [totalSpent, setTotalSpent] = useState([]);
     const [parentBalance, setParentBalance] = useState(0);
 
+    const handleLogout = () => {
+        logout({type: 'logout'});
+        alert('Logged out');
+        navigation.navigate('Login');
+    }
     const getTotalSpent = async (id) => {
         const total = await OrderHistoryService.getTotalSpent(id, token);
         return total;
@@ -73,7 +78,9 @@ function Home({ navigation }) {
         <View style={styles.container}>
             <View style={styles.topContainer}>
                 <View style={styles.topSection}>
+                    <TouchableOpacity onPress={handleLogout}>
                     <BigUserIcon style={styles.icon} />
+                    </TouchableOpacity>
                     <Text style={styles.greeting}>{`Hello!`}</Text>
                 </View>
 
