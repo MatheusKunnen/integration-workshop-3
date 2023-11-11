@@ -121,8 +121,9 @@ class MotionSystemController:
                 try:
                     self.__enable_axes()
 
-                    self.__v_axis.move_to_position(v_pos, queue=True)
-                    self.__h_axis.move_to_position(h_pos, queue=True)
+                    can_use_axes_queue = self.__can_use_axes_queue(v_pos, h_pos)
+                    self.__v_axis.move_to_position(v_pos, queue=can_use_axes_queue)
+                    self.__h_axis.move_to_position(h_pos, queue=can_use_axes_queue)
                     self.__v_axis.join()
                     self.__h_axis.join()
                     self.__disable_axes()
@@ -133,14 +134,14 @@ class MotionSystemController:
                     res_send = True
 
                     self.__product_dispenser.home(depth)
-
-                    self.__enable_axes()
-                    self.__h_axis.move_to_position(0, queue=True)
-                    self.__v_axis.move_to_position(0, queue=True)
-                    self.__v_axis.join()
-                    self.__h_axis.join()
-                    self.__v_axis.home()
-                    self.__h_axis.home()
+                    if self.__req_queue.empty():
+                        self.__enable_axes()
+                        self.__h_axis.move_to_position(0, queue=True)
+                        self.__v_axis.move_to_position(0, queue=True)
+                        self.__v_axis.join()
+                        self.__h_axis.join()
+                        self.__v_axis.home()
+                        self.__h_axis.home()
                 except Exception as e:
                     if not res_send:
                         self.__res_queue.put((False, str(e)))
@@ -151,6 +152,10 @@ class MotionSystemController:
                 if not res_send:
                     self.__res_queue.put((False, str(e)))
 
+    def __can_use_axes_queue(self, v_pos:int, h_pos:int):
+        v_steps = v_pos - self.__v_axis.position() 
+        h_steps = h_pos - self.__h_axis.position() 
+        return v_steps == 0 or h_steps == 0 or (v_steps > 0 and h_steps > 0) or (v_steps < 0 and h_steps < 0)
 
     def manual_mode_menu(self):
         try:

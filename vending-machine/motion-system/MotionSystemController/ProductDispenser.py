@@ -29,13 +29,12 @@ class ProductDispenser:
         if self.__limiter.is_on():
             raise RuntimeError('PD:provide_product: Limiter already activated')
         
-        initial_depth = ProductDispenser.__STEPS_PER_REV #round(depth*0.25)
-        left_depth = depth - initial_depth
         self.__depth_motor.set_velocity(StepperVelocity.FAST)
         self.__depth_motor.step(depth)
 
         self.__pd_motor.set_velocity(StepperVelocity.FAST)
         dir = 1
+        left_depth = depth
         while left_depth > 0:
             self.__pd_motor.step(dir*ProductDispenser.__WIGGLE_STEPS, queue=True)
             dir *= -1
@@ -48,7 +47,7 @@ class ProductDispenser:
 
         self.__depth_motor.join()
         self.__pd_motor.join()
-        
+
         self.__pd_motor.set_velocity(StepperVelocity.SLOW)        
         self.__pd_motor.step(turns)
 
@@ -64,7 +63,7 @@ class ProductDispenser:
             t_steps += ProductDispenser.__DELTA_STEPS
         
         if not self.__limiter.is_on():
-            self.__depth_motor.set_velocity(StepperVelocity.SLOW)
+            self.__depth_motor.set_velocity(StepperVelocity.NORMAL)
             while not self.__limiter.is_on():
                 self.__depth_motor.step(-ProductDispenser.__DELTA_STEPS)
                 t_steps += ProductDispenser.__DELTA_STEPS

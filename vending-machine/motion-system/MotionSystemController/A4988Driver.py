@@ -16,6 +16,9 @@ class A4988Driver(StepperDriver):
         self.start_process()
 
     def step(self, steps:int, velocity=None, queue=False):
+        if steps == 0:
+            return
+        
         if queue:
             self.add_step_to_queue(steps, velocity)
             return 
