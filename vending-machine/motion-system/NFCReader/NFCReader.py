@@ -26,7 +26,7 @@ class NFCReader:
         if self.__thread is not None:
             raise RuntimeError('NFCReader thread already started')
         
-        self.__thread = Process(target=self.__run, name='NFC Reader Thread')
+        self.__thread = Process(target=self.__run, name='NFC Reader Thread', daemon=True)
         
         self.__thread.start()
 

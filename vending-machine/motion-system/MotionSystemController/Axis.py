@@ -21,13 +21,13 @@ class Axis:
         self.__safe_steps = 50
         self.__delta_step = 5
 
-    def move(self, steps, direct = False):
+    def move(self, steps, direct = False, queue=False):
         if self.__safe_mode:
            self. __validate_moving_steps(steps)
 
         if direct or not Axis.__USE_IR_SENSOR or len(self.__reference_lines_pos) == 0:
             self.__current_pos += steps
-            self.__stepper.step(steps)
+            self.__stepper.step(steps, queue=queue)
         else:
             retries = 0
             while retries < 2:
@@ -44,10 +44,11 @@ class Axis:
                         self.__calibrate_limits()
 
 
-    def move_to_position(self, position, direct=False):
-        self.move(position - self.__current_pos, direct)
-        if position == 0:
-            self.home()
+    def move_to_position(self, position, direct=False, queue=False):
+        self.move(position - self.__current_pos, direct, queue)
+
+    def join(self):
+        self.__stepper.join()
 
     def home(self):
         self.__safe_mode = False
