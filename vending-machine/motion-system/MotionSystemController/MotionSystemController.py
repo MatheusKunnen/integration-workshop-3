@@ -17,12 +17,12 @@ except:
 class MotionSystemController:
 
     __DEFAULT_PRODUCTS = [
-        {"id": 1, "v_pos": 450, "h_pos": 450, "depth":4096*6, "turns":4096+2048},
-        {"id": 2, "v_pos": 450, "h_pos": 2900, "depth":4096*6, "turns":4096+2048},
-        {"id": 3, "v_pos": 450, "h_pos": 5250, "depth":4096*6, "turns":4096+2048},
-        {"id": 4, "v_pos": 4850, "h_pos": 450, "depth":4096*6, "turns":4096+2048},
-        {"id": 5, "v_pos": 4850, "h_pos": 2900, "depth":4096*6, "turns":4096+2048},
-        {"id": 6, "v_pos": 4850, "h_pos": 5250, "depth":4096*6, "turns":4096+2048},
+        {"id": 1, "v_pos": 450, "h_pos": 450, "depth":4096*7, "turns":4096+2048},
+        {"id": 2, "v_pos": 450, "h_pos": 2825, "depth":4096*7, "turns":4096+2048},
+        {"id": 3, "v_pos": 450, "h_pos": 5225, "depth":4096*7, "turns":4096+2048},
+        {"id": 4, "v_pos": 4850, "h_pos": 450, "depth":4096*7, "turns":4096+2048},
+        {"id": 5, "v_pos": 4850, "h_pos": 2825, "depth":4096*7, "turns":4096+2048},
+        {"id": 6, "v_pos": 4850, "h_pos": 5225, "depth":4096*5, "turns":4096+2048},
     ]
 
     def __init__(self, config: MotionSystemConfiguration):
@@ -49,11 +49,11 @@ class MotionSystemController:
 
 
     def provide_product(self, product_id:int):
+        self.__load_products_pos()
         v_pos, h_pos, depth, turns = self.__get_product_position(product_id)
 
         print(f"Providing product {v_pos}, {h_pos}, {depth}, {turns}")
         try:
-            self.__load_products_pos()
             self.__enable_axes()
 
             self.__v_axis.move_to_position(v_pos)
