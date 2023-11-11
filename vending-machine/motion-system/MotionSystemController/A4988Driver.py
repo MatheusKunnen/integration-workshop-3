@@ -13,8 +13,13 @@ class A4988Driver(StepperDriver):
         StepperDriver.__init__(self)
         self.__step_pin = step_pin
         self.__dir_pin = dir_pin
+        self.start_process()
 
-    def step(self, steps:int, velocity=None):
+    def step(self, steps:int, velocity=None, queue=False):
+        if queue:
+            self.add_step_to_queue(steps, velocity)
+            return 
+        
         dir = StepperDirection.CW if steps > 0 else StepperDirection.CCW
         self.__set_direction(dir)
 
@@ -35,8 +40,8 @@ class A4988Driver(StepperDriver):
 
     def __get_delay(self, velocity: StepperVelocity):
         if velocity == StepperVelocity.NORMAL:
-            return 0.0005 # 500us
+            return 0.000500 #0.0005 # 500us
         elif velocity == StepperVelocity.FAST:
-            return 0.0004 # 400us
+            return 0.000400 #0.0004 # 400us
         else:
-            return 0.0007 # 700us
+            return 0.000700 #0.0007 # 700us

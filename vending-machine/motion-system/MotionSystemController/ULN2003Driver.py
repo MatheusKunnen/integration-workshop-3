@@ -22,8 +22,13 @@ class ULN2003Driver(StepperDriver):
         self.__pins = tuple(pins)
         self.__current_step = 0
         GPIO.output(self.__pins, (0,0,0,0))
+        self.start_process()
 
-    def step(self, steps:int, velocity=None):
+    def step(self, steps:int, velocity=None, queue:bool=False):
+        if queue:
+            self.add_step_to_queue(steps, velocity)
+            return 
+        
         dir = StepperDirection.CW if steps > 0 else StepperDirection.CCW
 
         if velocity is None:
@@ -42,14 +47,18 @@ class ULN2003Driver(StepperDriver):
 
     def __get_delay(self, velocity: StepperVelocity):
         if velocity == StepperVelocity.NORMAL:
-            return 0.00120 # 1000us
+            return 0.000500 
         elif velocity == StepperVelocity.FAST:
-            return 0.00100 #  750us
+            return 0.000400 
         else:
-            return 0.00150 # 1500us
+            return 0.000900 
         
     def __next_step(self, direction: StepperDirection):
         if direction==StepperDirection.CW:
             self.__current_step = (self.__current_step - 1) % len(ULN2003Driver.__STEP_SEQ)
         else:
             self.__current_step = (self.__current_step + 1) % len(ULN2003Driver.__STEP_SEQ)
+
+    def __del__(self):
+        GPIO.output(self.__pins, (0,0,0,0))
+
