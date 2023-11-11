@@ -1,7 +1,7 @@
 from .MotionSystemConfiguration import MotionSystemConfiguration
 from .Axis import Axis
 from .A4988Driver import A4988Driver
-from .ULN2009Driver import ULN2009Driver
+from .ULN2003Driver import ULN2003Driver
 from .StepperDriver import *
 from .LimiterSwitch import LimiterSwitch
 from .ReflectanceSensor import ReflectanceSensor
@@ -34,8 +34,8 @@ class MotionSystemController:
         self.__h_motor: StepperDriver = A4988Driver(config.step_pin_h, config.dir_pin)
         self.__v_motor: StepperDriver = A4988Driver(config.step_pin_v, config.dir_pin)
 
-        self.__pd_motor: StepperDriver = ULN2009Driver(config.pd_motor_pins)
-        self.__depth_motor: StepperDriver = ULN2009Driver(config.depth_motor_pins)
+        self.__pd_motor: StepperDriver = ULN2003Driver(config.pd_motor_pins)
+        self.__depth_motor: StepperDriver = ULN2003Driver(config.depth_motor_pins)
 
         self.__limiter_sw: LimiterSwitch = LimiterSwitch(config.limiter_pin)
         self.__h_sensor: ReflectanceSensor = ReflectanceSensor(config.sensor_pin_h, 'Horizontal')
