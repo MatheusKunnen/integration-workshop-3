@@ -6,6 +6,7 @@ from .StepperDriver import *
 from .LimiterSwitch import LimiterSwitch
 from .ReflectanceSensor import ReflectanceSensor
 from .ProductDispenser import ProductDispenser
+from .MotionSystemMonitor import MotionSystemMonitor
 
 from multiprocessing import Process, Queue
 import json
@@ -46,10 +47,14 @@ class MotionSystemController:
         self.__v_axis: Axis = Axis('Vertical', self.__v_motor, self.__limiter_sw, self.__v_sensor)
         self.__product_dispenser = ProductDispenser(self.__pd_motor, self.__depth_motor, self.__limiter_sw)
 
+        self.__monitor = MotionSystemMonitor(self.__limiter_sw, self.__config.en_pin)
+
         self.__req_queue = Queue()
         self.__res_queue = Queue()
 
         self.__process = Process(name="motion-system-controller", target=self.__process_entry, daemon=True)
+
+        self.__monitor.start()
         self.__process.start()
 
 
@@ -119,13 +124,16 @@ class MotionSystemController:
                 res_send = False
                 print(f"Providing product {v_pos}, {h_pos}, {depth}, {turns}")
                 try:
-                    self.__enable_axes()
+                    self.__enable_axes(True)
 
                     can_use_axes_queue = self.__can_use_axes_queue(v_pos, h_pos)
+
                     self.__v_axis.move_to_position(v_pos, queue=can_use_axes_queue)
                     self.__h_axis.move_to_position(h_pos, queue=can_use_axes_queue)
+
                     self.__v_axis.join()
                     self.__h_axis.join()
+
                     self.__disable_axes()
                     
                     self.__product_dispenser.provide_product(depth, turns)
@@ -134,12 +142,14 @@ class MotionSystemController:
                     res_send = True
 
                     self.__product_dispenser.home(depth)
+
                     if self.__req_queue.empty():
-                        self.__enable_axes()
+                        self.__enable_axes(True)
                         self.__h_axis.move_to_position(0, queue=True)
                         self.__v_axis.move_to_position(0, queue=True)
                         self.__v_axis.join()
                         self.__h_axis.join()
+                        self.__enable_axes(False)
                         self.__v_axis.home()
                         self.__h_axis.home()
                 except Exception as e:
@@ -195,9 +205,14 @@ class MotionSystemController:
         for pin in self.__config.input_pins():
             GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-    def __enable_axes(self):
+    def __enable_axes(self, safe_mode=False):
         GPIO.output(self.__config.en_pin, False)
+        if safe_mode:
+            self.__monitor.enable_safe_mode()
+        else:
+            self.__monitor.disable_safe_mode()
     
     def __disable_axes(self):
         GPIO.output(self.__config.en_pin, True)
+        self.__monitor.disable_safe_mode()
         

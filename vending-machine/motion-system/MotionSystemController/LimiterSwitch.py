@@ -10,13 +10,14 @@ class LimiterSwitch:
         self.__pin = pin
         self.__observers = []
         self.__status: bool = False
-        # self.__setup()
+        self.__observer_ready = False
 
-    def __setup(self):
-        GPIO.add_event_detect(self.__pin, GPIO.BOTH, 
-            callback=self.__on_change_cb, bouncetime=50)
+    def __setup_observer(self):
+        # GPIO.add_event_detect(self.__pin, GPIO.BOTH, 
+            # callback=self.__on_change_cb, bouncetime=50)
+        self.__observer_ready = True
 
-    def __on_change_cb(self):
+    def __on_change_cb(self, channel):
         if self.DEBUG:
             print(f'Switch changed')
 
@@ -33,5 +34,11 @@ class LimiterSwitch:
     def is_on(self):
         return GPIO.input(self.__pin) #self.__status
     
+    def pin(self):
+        return self.__pin
+    
     def add_observer(self, observer):
         self.__observers.append(observer) 
+        if not self.__observer_ready:
+            self.__setup_observer()
+
