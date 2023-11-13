@@ -75,7 +75,6 @@ function BudgetAndSnacks({ route,navigation}) {
 
     useFocusEffect(
         React.useCallback(() => {
-            console.log(child);
             getSnacksImageSet();
         }, [])
     );
