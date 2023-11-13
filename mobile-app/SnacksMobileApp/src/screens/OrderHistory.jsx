@@ -58,22 +58,25 @@ function OrderHistory ({route, navigation}) {
                 navigation.goBack();
                 }}
             />
+
             <View style={styles.content}>
                 <FlatList
                     data={orders}
-                    renderItem={({item, index}) => (
-                        <View style={styles.item} key={index}>
-                            <Image source={{uri: snacks[item.snackId - 1].image.url}} style={styles.image} />
-                            <View style={styles.itemTextContainer}>
-                                <Text style={styles.itemName}>{snacks[item.snackId - 1].name}</Text>
-                                <Text style={styles.itemPrice}>
-                                    R${String(item.price).slice(0, -2) || '0'},{String(item.price).slice(-2)}
-                                </Text>
-                                <Text style={styles.itemDate}>
-                                    {new Date(item.createdAt).toLocaleString('pt-BR', dateOptions)}
-                                </Text>
+                    renderItem={({ item, index }) => (
+                        snacks.find(snack => snack.id === item.snackId) && (
+                            <View style={styles.item} key={index}>
+                                <Image source={{uri: snacks[snacks.findIndex(snack => snack.id === item.snackId)].image.url}} style={styles.image} />
+                                <View style={styles.itemTextContainer}>
+                                    <Text style={styles.itemName}>{snacks.find(snack => snack.id === item.snackId).name}</Text>
+                                    <Text style={styles.itemPrice}>
+                                        R${String(item.price).slice(0, -2) || '0'},{String(item.price).slice(-2)}
+                                    </Text>
+                                    <Text style={styles.itemDate}>
+                                        {new Date(item.createdAt).toLocaleString('pt-BR', dateOptions)}
+                                    </Text>
+                                </View>
                             </View>
-                        </View>
+                        )
                     )}
                     keyExtractor={(item, index) => index.toString()}
                 />
