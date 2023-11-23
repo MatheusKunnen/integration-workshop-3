@@ -1,7 +1,7 @@
-import { Sequelize } from "sequelize";
-import db from "../../database/database_config.js";
+import { Sequelize } from 'sequelize';
+import db from '../../database/database_config.js';
 
-export default db.define("Parents", {
+export default db.define('Parents', {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
@@ -23,6 +23,6 @@ export default db.define("Parents", {
   balance: {
     type: Sequelize.INTEGER,
     allowNull: false,
-    defaultValue: 0,
+    defaultValue: 10000,
   },
 });
