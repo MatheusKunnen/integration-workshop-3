@@ -53,8 +53,12 @@ class ProductDispenser:
 
     
     def home(self, depth:int):
-        self.__pd_motor.step(-round(ProductDispenser.__WIGGLE_STEPS/2), StepperVelocity.FAST)
-        self.__depth_motor.step(-round(ProductDispenser.__STEPS_PER_REV/4), StepperVelocity.FAST)
+        self.__pd_motor.step(-round(ProductDispenser.__WIGGLE_STEPS/2), StepperVelocity.FAST, queue=True)
+        self.__pd_motor.step(round(ProductDispenser.__WIGGLE_STEPS/2), StepperVelocity.FAST, queue=True)
+        self.__depth_motor.step(-round(ProductDispenser.__STEPS_PER_REV), StepperVelocity.NORMAL)
+
+        self.__depth_motor.join()
+        self.__pd_motor.join()
 
         t_steps = ProductDispenser.__STEPS_PER_REV
         self.__depth_motor.set_velocity(StepperVelocity.FAST)
@@ -68,8 +72,9 @@ class ProductDispenser:
                 self.__depth_motor.step(-ProductDispenser.__DELTA_STEPS)
                 t_steps += ProductDispenser.__DELTA_STEPS
                 
-        self.__depth_motor.set_velocity(StepperVelocity.FAST)
+        self.__depth_motor.set_velocity(StepperVelocity.SLOW)
         while self.__limiter.is_on():
             self.__depth_motor.step(ProductDispenser.__DELTA_STEPS)
-
+        
+        self.__depth_motor.set_velocity(StepperVelocity.NORMAL)
         self.__depth_motor.step(ProductDispenser.__SAFE_DEPTH_STEPS)

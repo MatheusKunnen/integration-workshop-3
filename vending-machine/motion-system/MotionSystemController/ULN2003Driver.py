@@ -15,7 +15,8 @@ class ULN2003Driver(StepperDriver):
                     (0,1,1,0),
                     (0,0,1,0),
                     (0,0,1,1),
-                    (0,0,0,1)]
+                    (0,0,0,1)
+                    ]
     
     def __init__(self, pins):
         StepperDriver.__init__(self)
@@ -50,11 +51,11 @@ class ULN2003Driver(StepperDriver):
 
     def __get_delay(self, velocity: StepperVelocity):
         if velocity == StepperVelocity.NORMAL:
-            return 0.000500 
+            return 0.000600
         elif velocity == StepperVelocity.FAST:
-            return 0.000400 
+            return 0.000500
         else:
-            return 0.000900 
+            return 0.000900
         
     def __next_step(self, direction: StepperDirection):
         if direction==StepperDirection.CW:
